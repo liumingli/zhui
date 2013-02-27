@@ -10,12 +10,10 @@ public class Dialogue {
 	private String id;
 	private String content;
 	private String image;
-	private String user;
 	private String shot;
-	private String template;
 	private int frame;
 	private String createTime;
-	private int enable;
+	
 	public String getId() {
 		return id;
 	}
@@ -34,23 +32,11 @@ public class Dialogue {
 	public void setImage(String image) {
 		this.image = image;
 	}
-	public String getUser() {
-		return user;
-	}
-	public void setUser(String user) {
-		this.user = user;
-	}
 	public String getShot() {
 		return shot;
 	}
 	public void setShot(String shot) {
 		this.shot = shot;
-	}
-	public String getTemplate() {
-		return template;
-	}
-	public void setTemplate(String template) {
-		this.template = template;
 	}
 	public int getFrame() {
 		return frame;
@@ -63,12 +49,6 @@ public class Dialogue {
 	}
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
-	}
-	public int getEnable() {
-		return enable;
-	}
-	public void setEnable(int enable) {
-		this.enable = enable;
 	}
 	
 	

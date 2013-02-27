@@ -68,5 +68,24 @@
     	<url-pattern>/zhuiapi</url-pattern>
     </servlet-mapping>
    
+   
+   <servlet>
+    	<description>素材上传并保存</description>
+    	<display-name>FileUploader</display-name>
+    	<servlet-name>FileUploader</servlet-name>
+    	<servlet-class>com.ybcx.zhui.tools.FileUploader</servlet-class>
+    	<init-param> 
+            <param-name>assetpath</param-name> 
+            <param-value>/WEB-INF/uploadFile</param-value> 
+        </init-param> 
+        <init-param> 
+            <param-name>temppath</param-name> 
+            <param-value>/WEB-INF/temp</param-value> 
+        </init-param> 
+    </servlet>  
+    <servlet-mapping>
+    	<servlet-name>FileUploader</servlet-name>
+    	<url-pattern>/fileupload</url-pattern>
+    </servlet-mapping>
 
 </web-app>

@@ -3,14 +3,7 @@
  */
 package com.ybcx.zhui.facade;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.fileupload.FileItem;
-
-
 
 
 
@@ -24,10 +17,10 @@ import org.apache.commons.fileupload.FileItem;
 public class ApiAdaptor {
 	
 	// 由Spring注入
-	private ComicServiceInterface comicService;
+	private ZhuiServiceInterface zhuiService;
 
-	public void setComicService(ComicServiceInterface comicService) {
-		this.comicService = comicService;
+	public void setZhuiService(ZhuiServiceInterface zhuiService) {
+		this.zhuiService = zhuiService;
 	}
 	public ApiAdaptor() {
 
@@ -35,77 +28,48 @@ public class ApiAdaptor {
 
 	// 由AppStarter调用
 	public void setImagePath(String filePath) {
-		this.comicService.saveImagePathToProcessor(filePath);
-	}
-
-	public String createThumbnail(List<FileItem> fileItems) {
-		FileItem sourceData = null;
-		for (int i = 0; i < fileItems.size(); i++) {
-			FileItem item = fileItems.get(i);
-			if (!item.isFormField()) {
-				//图片数据
-				sourceData = item;
-			}
-		}
-		String imgPath = comicService.createAdImg(sourceData);
-		return imgPath;
-	}
-	
-	public String createAnimation(List<FileItem> fileItems) {
-		FileItem shotData = null;
-		String userId = "";
-		String name = "";
-		String content = "";
-		
-		for (int i = 0; i < fileItems.size(); i++) {
-			FileItem item = fileItems.get(i);
-			if (!item.isFormField()) {
-				//图片数据
-				shotData = item;
-			}
-			
-			if (item.isFormField()) {
-				
-				if (item.getFieldName().equals("userId")) {
-					userId = item.getString();
-				}
-				
-				if (item.getFieldName().equals("name")) {
-					try {
-						name = item.getString("UTF-8");
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-					}
-				}
-				
-				if (item.getFieldName().equals("content")) {
-					try {
-						content = item.getString("UTF-8");
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-					}
-				}
-				
-			}
-		}//取参数完成
-	
-		String result = comicService.createAnimation(shotData,userId,name,content);
-		
-		return result;
-		
+		this.zhuiService.saveImagePathToProcessor(filePath);
 	}
 	
 	public void getThumbnailFile(String relativePath, HttpServletResponse res) {
-		comicService.getThumbnailFile(relativePath,res);
+		zhuiService.getThumbnailFile(relativePath,res);
 	}
 	
 	public void getAssetFile(String relativePath, HttpServletResponse res) {
-		comicService.getAssetFile(relativePath,res);
+		zhuiService.getAssetFile(relativePath,res);
 	}
 	
 	public void dialogueToImage(String dialogue, String fontSize,
 		 String isBold, String width, String height, HttpServletResponse res) {
-		comicService.dialogueToImage(dialogue,fontSize,isBold,width,height,res);
+		zhuiService.dialogueToImage(dialogue,fontSize,isBold,width,height,res);
+	}
+	
+	public String saveTemplate(String name, String swf, String thumbnail,
+			String type) {
+		String res = zhuiService.saveTemplate(name,swf,thumbnail,type);
+		return res;
+	}
+	
+	public String deleteTemplate(String id) {
+		String res = zhuiService.deleteTemplate(id);
+		return res;
+	}
+	
+	public String saveShot(String name, String swf, String thumbnail,
+			String template, String frame, String bubble, String bubbleSize) {
+		String res = zhuiService.saveShot(name,swf,thumbnail,template,frame,bubble,bubbleSize);
+		return res;
+	}
+	
+	public String deleteShot(String id) {
+		String res = zhuiService.deleteShot(id);
+		return res;
+	}
+	
+	public String saveDialogue(String content, String image, String shot,
+			String frame) {
+		String res = zhuiService.saveDialogue(content,image,shot,frame);
+		return  res;
 	}
 	
 	

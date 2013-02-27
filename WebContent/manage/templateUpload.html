@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>模板素材上传</title>
+<link rel="stylesheet" type="text/css" charset="utf-8" href="css/style.css" />
+	
+<script type="text/javascript" src="js/jquery.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/jquery.ui.widget.js"
+	charset="utf-8"></script>
+<script type="text/javascript" src="js/jquery.iframe-transport.js"
+	charset="utf-8"></script>
+<script type="text/javascript" src="js/jquery.fileupload.js"
+	charset="utf-8"></script>
+
+<script type="text/javascript" src="js/template.js" charset="utf-8"></script>
+
+</head>
+<body>
+<div id="content">
+	<ul>
+		<li id="caption" ><b>模板上传</b></li>
+		<li>
+			<label>名称</label>
+			<input type="text" id="name"  maxlength="12" autofocus>
+			<span  style="display: none;" id="nameInfo"></span>
+		</li>
+		<li>
+			<label>swf文件</label>
+			<input type="file" id="swfUpload" data-url="/zhui/fileupload">
+			<span  style="display: none;" id="swfInfo"></span>
+			<span class="help-block">支持swf文件</span>
+			<input type="hidden" id="swfPath">
+		</li>
+		<li>
+			<label>&nbsp;缩略图</label>
+			<input type="file" id="thumbnailUpload" data-url="/zhui/fileupload" accept="image/jpeg,image/png,image/gif">
+			<span  style="display: none;" id="thumbnailInfo"></span>
+			<span class="help-block">尺寸：200*200</span>
+			<input type="hidden" id="thumbnailPath">
+		</li>
+		<li>
+			<label>分类</label>
+				<select id="type">
+					<option value="表白" selected="selected">表白</option>
+					<option value="暗恋" >暗恋</option>
+					<option value="热恋" >热恋</option>
+					<option value="分手" >分手</option>
+					<option value="决裂" >决裂</option>
+				</select>
+		</li>
+<!-- 		<li> -->
+<!-- 			<label>广告</label> -->
+<!-- 			<input type="radio" name="radiobutton" id="ad" value="1" >有 -->
+<!-- 			<input type="radio" name="radiobutton" id="ad" value="0" checked >无 -->
+<!-- 		</li> -->
+		<li>
+			<input type="button" id="submit" value="提交" onclick="createTemplate();">
+			<input type="button" id="cancel" value="取消" onclick="emptyForm();">
+			<span  style="display: none;" id="load"></span>
+		</li>
+	</ul>
+</div>
+
+</body>
+</html>

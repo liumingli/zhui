@@ -36,10 +36,10 @@
 	</bean>
 	
 	<bean id="apiAdaptor" class="com.ybcx.zhui.facade.ApiAdaptor">
-		<property name="comicService" ref="comicService" />
+		<property name="zhuiService" ref="zhuiService" />
 	</bean>
 	
-	<bean id="comicService" class="com.ybcx.zhui.facade.ComicServiceImplement">
+	<bean id="zhuiService" class="com.ybcx.zhui.facade.ZhuiServiceImplement">
 		<property name="dbVisitor" ref="dbAcess" />
 		<property name="systemConfigurer" ref="systemConfigurer" />
 	</bean>

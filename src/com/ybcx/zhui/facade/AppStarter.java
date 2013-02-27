@@ -142,10 +142,10 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 	 * @param res
 	 * @throws IOException 
 	 */
-	private void weiboProcess(String action, HttpServletRequest req,
-			HttpServletResponse res) throws IOException {
-		
-	}
+//	private void weiboProcess(String action, HttpServletRequest req,
+//			HttpServletResponse res) throws IOException {
+//		
+//	}
 
 	
 	@SuppressWarnings("unchecked")
@@ -157,21 +157,20 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 			log.debug("<<< Uploading complete!");
 			
 			if(GlobalController.isDebug){
-				String method = getMethod(fileItems);
-				if(method.equals("upload")){
-					apiAdaptor.createThumbnail(fileItems);
-				}
+//				String method = getMethod(fileItems);
+//				if(method.equals("upload")){
+//					apiAdaptor.createThumbnail(fileItems);
+//				}
 			}else{
-				// 送由适配器解析参数前，先检查一下是否是正常用户
-					//获取是要做什么操作，这里区分上传头像和贴图
-			    	String method = getMethod(fileItems);
-				    if(method.equals(AppStarter.SAVEANIM)){
-						String result = apiAdaptor.createAnimation(fileItems);
-						pw.write(result);
-						
-					 }else{
-						
-					 }
+				
+		    	String method = getMethod(fileItems);
+//			    if(method.equals(AppStarter.SAVEANIM)){
+//					String result = apiAdaptor.createAnimation(fileItems);
+//					pw.write(result);
+//					
+//				 }else{
+//					
+//				 }
 			}
 			
 		} catch (SizeLimitExceededException e) {

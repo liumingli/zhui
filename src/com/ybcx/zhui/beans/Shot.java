@@ -8,6 +8,7 @@ package com.ybcx.zhui.beans;
 public class Shot {
 	
 	private String id;
+	private String name;
 	private String swf;
 	private String thumbnail;
 	private String template;
@@ -16,11 +17,18 @@ public class Shot {
 	private String bubbleSize;
 	private String createTime;
 	private int enable;
+	
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	public String getSwf() {
 		return swf;

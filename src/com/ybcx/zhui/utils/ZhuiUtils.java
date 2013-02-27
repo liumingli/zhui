@@ -13,6 +13,11 @@ public class ZhuiUtils {
 		return uid;
 	}
 	
+	public static String getFormatNowTime(){
+		String now = simpledDateFormat.format(new Date().getTime());
+		return now;
+	}
+		
 	public static String formatDate(Date date){
 		return simpledDateFormat.format(date);
 	}

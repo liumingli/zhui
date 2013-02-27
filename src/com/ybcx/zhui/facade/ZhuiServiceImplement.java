@@ -12,32 +12,31 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
 
 import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageDecoder;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
+import com.ybcx.zhui.beans.Dialogue;
+import com.ybcx.zhui.beans.Shot;
+import com.ybcx.zhui.beans.Template;
 import com.ybcx.zhui.dao.DBAccessInterface;
+import com.ybcx.zhui.utils.ZhuiUtils;
 
-public class ComicServiceImplement implements ComicServiceInterface {
+public class ZhuiServiceImplement implements ZhuiServiceInterface {
 
-	private Logger log = Logger.getLogger(ComicServiceImplement.class);
+	private Logger log = Logger.getLogger(ZhuiServiceImplement.class);
 	
 	// 由Spring注入
 	private DBAccessInterface dbVisitor;
@@ -69,52 +68,6 @@ public class ComicServiceImplement implements ComicServiceInterface {
 	
 	private static final String SWF = "application/x-shockwave-flash;charset=UTF-8";
 		
-	
-	public String createAdImg(FileItem adData) {
-		String type = "";
-		if (adData != null) {
-			String fileName = adData.getName();
-			int dotPos = fileName.lastIndexOf(".");
-			type = fileName.substring(dotPos);
-		}
-
-		Date date = new Date();//获取当前时间
-		SimpleDateFormat sdfFileName = new SimpleDateFormat("yyyyMMddHHmmss");
-		String newfileName = sdfFileName.format(date);//文件名称
-		
-		String path = imagePath + File.separator + newfileName + type;
-		try {
-			BufferedInputStream in = new BufferedInputStream(adData.getInputStream());
-			// 获得文件输入流
-			BufferedOutputStream outStream = new BufferedOutputStream(new FileOutputStream(new File(path)));// 获得文件输出流
-			Streams.copy(in, outStream, true);// 开始把文件写到你指定的上传文件夹
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		//上传成功，则插入数据库
-		if (new File(path).exists()) {
-			//保存到数据库
-			System.out.println("保存成功"+path);
-		}
-		return path;
-	}
-
-
-//	private String saveAnimationRaw(FileItem imgData) {
-//		String fileName = imgData.getName();
-//		int position = fileName.lastIndexOf(".");
-//		String extend = fileName.substring(position);
-//		String newName = fileName.substring(0,position)+"_Raw"+extend;
-//		String filePath = imagePath + File.separator + newName;
-//		File file = new File(filePath);
-//		try {
-//			imgData.write(file);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return filePath;
-//	}
-
 	
 
 	@Override
@@ -249,21 +202,13 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		getOutInfo(imageIn, res);
 	}
 
-
-	@Override
-	public String createAnimation(FileItem shotData, String userId,
-			String name, String content) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 	@Override
 	public void dialogueToImage(String dialogue, String fontSize,
 			String isBold, String width, String height,HttpServletResponse res) {
-		// TODO Auto-generated method stub
+		//将文字生成png图片并返回
 		res.setContentType(PNG);
 		String filePath = createDialogueImage(dialogue,Integer.parseInt(fontSize),Integer.parseInt(isBold),Integer.parseInt(width),Integer.parseInt(height));
+		log.info("The new image path is "+filePath);
 		File file = new File(filePath);
 		if (file.exists()) {
 			try {
@@ -294,7 +239,8 @@ public class ComicServiceImplement implements ComicServiceInterface {
 		g2 = bi.createGraphics();
 
 		/** 设置生成图片的文字样式 * */
-		Font font = new Font("华康少女文字W5", isBold, fontSize);
+		String fontName =  systemConfigurer.getProperty("fontName").toString();
+		Font font = new Font(fontName, isBold, fontSize);
 		g2.setFont(font);
 		g2.setPaint(Color.blue);
 		
@@ -351,6 +297,106 @@ public class ComicServiceImplement implements ComicServiceInterface {
 			e.printStackTrace();
 		}
 		return file.getPath();
+	}
+
+	@Override
+	public String saveTemplate(String name, String swf, String thumbnail,
+			String type) {
+		boolean flag = false;
+		Template template = this.generateTemplate(name,swf,thumbnail,type);
+		int res = dbVisitor.saveTemplate(template);
+		if(res > 0){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
+	private Template generateTemplate(String name, String swf,
+			String thumbnail, String type) {
+		Template template = new Template();
+		template.setId(ZhuiUtils.generateUID());
+		template.setName(name);
+		template.setSwf(swf);
+		template.setThumbnail(thumbnail);
+		template.setType(type);
+		template.setEnable(1);
+		template.setCreateTime(ZhuiUtils.getFormatNowTime());
+		return template;
+	}
+
+	@Override
+	public String deleteTemplate(String id) {
+		boolean flag = false;
+		//删除模板
+		int rows = dbVisitor.deleteTemplate(id);
+		//删除分镜头
+		int dels = dbVisitor.deleteShotByTemplate(id);
+		if(rows ==1 &&  dels > 0){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
+	@Override
+	public String saveShot(String name, String swf, String thumbnail,
+			String template, String frame, String bubble, String bubbleSize) {
+		boolean flag = false;
+		Shot shot = this.generateShot(name,swf,thumbnail,template,frame,bubble,bubbleSize);
+		int res = dbVisitor.saveShot(shot);
+		if(res > 0){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
+	private Shot generateShot(String name, String swf, String thumbnail,
+			String template, String frame, String bubble, String bubbleSize) {
+		Shot shot = new Shot();
+		shot.setId(ZhuiUtils.generateUID());
+		shot.setName(name);
+		shot.setSwf(swf);
+		shot.setThumbnail(thumbnail);
+		shot.setTemplate(template);
+		shot.setFrame(Integer.parseInt(frame));
+		shot.setBubble(Integer.parseInt(bubble));
+		shot.setBubbleSize(bubbleSize);
+		shot.setCreateTime(ZhuiUtils.getFormatNowTime());
+		shot.setEnable(1);
+		return shot;
+	}
+
+	@Override
+	public String deleteShot(String id) {
+		boolean flag = false;
+		int rows = dbVisitor.deleteShot(id);
+		if(rows ==1){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
+	@Override
+	public String saveDialogue(String content, String image, String shot,
+			String frame) {
+		boolean flag = false;
+		Dialogue dialogue = this.generateDialogue(content,image,shot,frame);
+		int res = dbVisitor.saveDialogue(dialogue);
+		if(res > 0){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
+	private Dialogue generateDialogue(String content, String image,
+			String shot, String frame) {
+		Dialogue dialogue = new Dialogue();
+		dialogue.setId(ZhuiUtils.generateUID());
+		dialogue.setContent(content);
+		dialogue.setImage(image);
+		dialogue.setShot(shot);
+		dialogue.setFrame(Integer.parseInt(frame));
+		dialogue.setCreateTime(ZhuiUtils.getFormatNowTime());
+		return dialogue;
 	}
 
 	
