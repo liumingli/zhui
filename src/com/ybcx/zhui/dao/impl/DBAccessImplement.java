@@ -64,7 +64,7 @@ public class DBAccessImplement  implements DBAccessInterface{
 	@Override
 	public int saveShot(final Shot shot) {
 		String sql = "INSERT INTO t_shot "
-				+ "(s_id,s_name, s_swf, s_thumbnail, s_template, s_frame,s_bubble,s_bubbleSize, s_createTime,s_enable ,t_memo) "
+				+ "(s_id,s_name, s_swf, s_thumbnail, s_template, s_frame,s_bubble,s_bubbleSize, s_createTime,s_enable ,s_memo) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		
 		int res =jdbcTemplate.update(sql, new PreparedStatementSetter() {
@@ -100,7 +100,7 @@ public class DBAccessImplement  implements DBAccessInterface{
 	@Override
 	public int saveDialogue(final Dialogue dialogue) {
 		String sql = "INSERT INTO t_dialogue "
-				+ "(d_id, d_content, d_image, d_shot, d_frame,d_createTime,t_memo) "
+				+ "(d_id, d_content, d_image, d_shot, d_frame,d_createTime,d_memo) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
 		
 		int res =jdbcTemplate.update(sql, new PreparedStatementSetter() {

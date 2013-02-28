@@ -57,43 +57,102 @@ window.onload = function(){
 };
 
 
-function createTemplate(){
-	if(checkTemplateNull()){
+function createShot(){
+	if(checkShotNull()){
 		$('#load').show().html('<img src="imgs/loading.gif">');
 		var name = 	$("#name").val();
 		var swf = $("#swfPath").val();
 		var thumbnail = $("#thumbnailPath").val();
-		var type =  $("#type").val();
+		var frame = $('#frame').val();
+		var bubble = "";
+	    var radio = document.getElementsByName("radiobutton");
+		var template = $("#template").val();
+		for(var i=0;i<radio.length;i++)
+		{
+		     if(radio.item(i).checked){
+		    	 bubble=radio.item(i).getAttribute("value");  
+		         break;
+		     }else{
+		    	 continue;
+		     }
+		}
+		var bubbleSize = $('#bubbleSize').val();
 		
 		$.post('/zhui/zhuiapi',{
-			"method" : "saveTemplate",
+			"method" : "saveShot",
 			'name' : name,
 			'swfPath' : swf,
 			'thumbnailPath' : thumbnail,
-			'type' : type
+			'frame' : frame,
+			'bubble' : bubble,
+			'bubbleSize' : bubbleSize,
+			'template' : template
 		},
 		function(result){
 			$('#load').attr("style","display:none");
 			if(result == 'false'){
-				$('#prompt').show().html("上传模板有误，请重试");
+				$('#prompt').show().html("上传分镜头有误，请重试");
 			}else{
-				var param ="('"+name+"','"+result+"')";
-				$('#prompt').show().html('<font color="red" size="2">提示：上传模板成功，现在去<a href="javascript:addShotPanel'+param+';">添加分镜头</a></font>');
+				//$('#prompt').show().html('<font color="red" size="2">提示：上传结局成功，点击<a href="javascript:addEnding'+param+';">继续添加</a></font>');
 			}
 		});
 	}
 }
 
-function checkTemplateNull(){
+function checkShotNull(){
 	var name = 	$("#name").val();
 	var swf = $("#swfPath").val();
 	var thumbnail = $("#thumbnailPath").val();
-	var type =  $("#type").val();
-	if(name != null && name != "" && swf != null && swf != "" 
-		&& thumbnail != null && thumbnail != "" && type != null && type != ""){
+	var frame =  $("#frame").val();
+	var bubbleSize = $("#bubbleSize").val();
+	alert(bubbleSize);
+	var template = $("#template").val();
+	if(name != null && name != "" && swf != null && swf != "" && frame != null && frame != ""
+		&& thumbnail != null && thumbnail != "" && bubbleSize !=null && bubbleSize !=""
+		&& template != null && template != "" 	){
 		return true;
 	}else{
 		return false;
+	}
+}
+
+function checkNum(){
+	var val = $("#frame").val();
+	if(isNaN(val)){
+		 $('#frameInfo').show().html('<font color="red" size="2">*请输入数字</font>');
+	}else{
+		var r = /^\+?[1-9][0-9]*$/;//正整数 
+		if(r.test(val)){
+			 $('#frameInfo').hide();
+		}else{
+			 $('#frameInfo').show().html('<font color="red" size="2">*帧数必须大于0</font>');
+		}
+	}
+}
+
+function cancelFrame(){
+	$("#frame").val("");
+}
+
+function hasBubbleClick(){
+	$('#bubbleInfo').hide();
+	$("#bubbleSize").removeAttr("disabled");
+	$("#bubbleSize").val("");
+}
+
+function noBubbleClick(){
+	$('#bubbleInfo').hide();
+	$("#bubbleSize").val(0);
+	$("#bubbleSize").attr('disabled','disabled');
+}
+
+function checkBubbleSize(){
+	var size = $("#bubbleSize").val();
+	var s = size.indexOf("*");
+	if(s==-1){
+		 $('#bubbleInfo').show().html('<font color="red" size="2">如200*150</font>');
+	}else{
+		$('#bubbleInfo').hide();
 	}
 }
 
@@ -104,13 +163,16 @@ function emptyForm(){
 	$('#swfUpload').removeAttr('disabled');
 	$("#thumbnailPath").val("");
 	$('#thumbnailUpload').removeAttr('disabled');
+	$("#frame").val("");
+	$("#frameInfo").hide();
+	$("#bubbleSize").val("");
+	$('#bubbleInfo').hide();
 	$('#prompt').hide();
 }
 
-function addShotPanel(nameParam,templateParam){
-	window.parent.frames['mainFrame'].location.href = "shotUpload.html";
-//	$('#template').attr("value",templateParam);
-//	$("#caption").html("<b>分镜头上传</b> (模板名称："+nameParam+")");
+function checkTemplate(){
+	var template = $('#template').val();
+	if(template == null || template ==""){
+		alert("请先上传模板再传分镜头");
+	}
 }
-
-

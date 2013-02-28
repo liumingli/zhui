@@ -303,18 +303,20 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	public String saveTemplate(String name, String swf, String thumbnail,
 			String type) {
 		boolean flag = false;
-		Template template = this.generateTemplate(name,swf,thumbnail,type);
+		String templateId = ZhuiUtils.generateUID();
+		Template template = this.generateTemplate(templateId,name,swf,thumbnail,type);
 		int res = dbVisitor.saveTemplate(template);
 		if(res > 0){
-			flag = true;
+			return templateId;
+		}else{
+			return String.valueOf(flag);
 		}
-		return String.valueOf(flag);
 	}
 
-	private Template generateTemplate(String name, String swf,
+	private Template generateTemplate(String templateId,String name, String swf,
 			String thumbnail, String type) {
 		Template template = new Template();
-		template.setId(ZhuiUtils.generateUID());
+		template.setId(templateId);
 		template.setName(name);
 		template.setSwf(swf);
 		template.setThumbnail(thumbnail);

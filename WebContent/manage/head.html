@@ -10,9 +10,9 @@
 	var staticVal = "";
 	function changeMainPage(val) {
 		var id = val.substring(0, val.lastIndexOf("."));
-// 		if (id != "templateUpload") {
-// 			document.getElementById("templateUpload").style.color = "#eee";
-// 		}
+		if (id != "templateUpload") {
+			document.getElementById("templateUpload").style.color = "#eee";
+		}
 		if (staticVal != id && staticVal != "") {
 			document.getElementById(staticVal).style.color = "#eee";
 		}
@@ -36,7 +36,7 @@
 						onclick="changeMainPage('shotUpload.html')">分镜头上传</a></li>
 						
 					<li class="xis"><a class="xhs" id="manage" href="#"
-						onclick="changeMainPage('manage.html')">模板与分镜头管理</a></li>
+						onclick="changeMainPage('manage.html')">素材管理</a></li>
 						
 				</ul>
 			</div>
