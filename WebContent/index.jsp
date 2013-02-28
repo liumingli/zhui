@@ -6,6 +6,6 @@
 <title>Home Page</title>
 </head>
 <body>
-	<% response.sendRedirect("animclient/watui.jsp"); %>
+	<% response.sendRedirect("manage/login.jsp"); %>
 </body>
 </html>

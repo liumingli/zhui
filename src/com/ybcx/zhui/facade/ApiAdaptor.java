@@ -72,6 +72,11 @@ public class ApiAdaptor {
 		return  res;
 	}
 	
+	public String loginSystem(String account, String password) {
+		String result = zhuiService.loginSystem(account,password);
+		return result;
+	}
+	
 	
 
 } // end of class

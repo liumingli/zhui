@@ -399,5 +399,16 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		return dialogue;
 	}
 
+	@Override
+	public String loginSystem(String account, String password) {
+		boolean flag = false;
+		String user = systemConfigurer.getProperty("account");
+		String pwd = systemConfigurer.getProperty("password");
+		if(account.equals(user) && password.equals(pwd)){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
 	
 }

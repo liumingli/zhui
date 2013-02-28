@@ -9,6 +9,8 @@ package com.ybcx.zhui.facade;
  */
 public interface ExtVisitorInterface {
 	
+    //登录后台管理系统
+    public static final String LOGINSYSTEM = "loginSystem";
 	
 	//根据文字生成图片（用于测试，要外加包装）
 	public static final String DIALOGUETOIMAGE = "dialogueToImage";

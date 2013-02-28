@@ -30,5 +30,7 @@ public interface ZhuiServiceInterface {
 	public String saveDialogue(String content, String image, String shot,
 			String frame);
 
+	public String loginSystem(String account, String password);
+
 
 }
