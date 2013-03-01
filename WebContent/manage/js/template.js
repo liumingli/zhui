@@ -75,7 +75,7 @@ function createTemplate(){
 		function(result){
 			$('#load').attr("style","display:none");
 			if(result == 'false'){
-				$('#prompt').show().html("上传模板有误，请重试");
+				$('#prompt').show().html("上传模板有误，请点击取消按钮重试");
 			}else{
 				var param ="('"+name+"','"+result+"')";
 				$('#prompt').show().html('<font color="red" size="2">提示：上传模板成功，现在去<a href="javascript:addShotPanel'+param+';">添加分镜头</a></font>');
@@ -104,13 +104,15 @@ function emptyForm(){
 	$('#swfUpload').removeAttr('disabled');
 	$("#thumbnailPath").val("");
 	$('#thumbnailUpload').removeAttr('disabled');
+	$("#swfInfo").hide();
+	$("#thumbnailInfo").hide();
 	$('#prompt').hide();
 }
 
 function addShotPanel(nameParam,templateParam){
-	window.parent.frames['mainFrame'].location.href = "shotUpload.html";
-//	$('#template').attr("value",templateParam);
-//	$("#caption").html("<b>分镜头上传</b> (模板名称："+nameParam+")");
+	window.parent.frames['topFrame'].document.getElementById("shotUpload").style.color = "#ff9966";
+	window.parent.frames['topFrame'].document.getElementById("templateUpload").style.color = "#eee";
+	window.parent.frames['mainFrame'].location.href = "shotUpload.html?name="+nameParam+"&id="+templateParam;
 }
 
 

@@ -54,6 +54,9 @@ window.onload = function(){
 		}
 	});
 	
+	//检查是否已经上传了主模板，若无跳转
+	 checkTemplate();
+	
 };
 
 
@@ -91,9 +94,9 @@ function createShot(){
 		function(result){
 			$('#load').attr("style","display:none");
 			if(result == 'false'){
-				$('#prompt').show().html("上传分镜头有误，请重试");
+				$('#prompt').show().html("上传分镜头有误，请点击取消按钮重试");
 			}else{
-				//$('#prompt').show().html('<font color="red" size="2">提示：上传结局成功，点击<a href="javascript:addEnding'+param+';">继续添加</a></font>');
+				$('#prompt').show().html('<font color="red" size="2">提示：上传分镜头成功，点击<a href="javascript:emptyForm();">继续添加</a></font>');
 			}
 		});
 	}
@@ -105,7 +108,6 @@ function checkShotNull(){
 	var thumbnail = $("#thumbnailPath").val();
 	var frame =  $("#frame").val();
 	var bubbleSize = $("#bubbleSize").val();
-	alert(bubbleSize);
 	var template = $("#template").val();
 	if(name != null && name != "" && swf != null && swf != "" && frame != null && frame != ""
 		&& thumbnail != null && thumbnail != "" && bubbleSize !=null && bubbleSize !=""
@@ -163,6 +165,8 @@ function emptyForm(){
 	$('#swfUpload').removeAttr('disabled');
 	$("#thumbnailPath").val("");
 	$('#thumbnailUpload').removeAttr('disabled');
+	$("#swfInfo").hide();
+	$("#thumbnailInfo").hide();
 	$("#frame").val("");
 	$("#frameInfo").hide();
 	$("#bubbleSize").val("");
@@ -170,9 +174,23 @@ function emptyForm(){
 	$('#prompt').hide();
 }
 
+function getQueryString(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return decodeURI(r[2]); return null;
+ }
+
+
 function checkTemplate(){
-	var template = $('#template').val();
-	if(template == null || template ==""){
-		alert("请先上传模板再传分镜头");
+	var templateName = getQueryString("name");
+	var templateId = getQueryString("id");
+	if(templateId == null || templateId ==""){
+		//alert("请先上传模板再传分镜头");
+		window.parent.frames['topFrame'].document.getElementById("templateUpload").style.color = "#ff9966";
+		window.parent.frames['topFrame'].document.getElementById("shotUpload").style.color = "#eee";
+		window.parent.frames['mainFrame'].location.href = "templateUpload.html";
+	}else{
+		$('#template').attr("value",templateId);
+		$("#caption").html("<b>分镜头上传</b> (模板名称："+templateName+")");
 	}
 }

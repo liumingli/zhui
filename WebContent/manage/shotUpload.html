@@ -16,7 +16,7 @@
 <script type="text/javascript" src="js/shot.js" charset="utf-8"></script>
 
 </head>
-<body onload="checkTemplate();">
+<body>
 <div id="content">
 	<ul>
 		<li id="caption" ><b>上传分镜头</b></li>
@@ -50,7 +50,7 @@
 		</li>
 		<li>
 			<label>气泡大小</label>
-			<input type="text" id="bubbleSize"  onblur="checkBubbleSize();">
+			<input type="text" id="bubbleSize"  style="width:80px"  onblur="checkBubbleSize();">
 			<span class="help-block">格式：宽*高</span>
 			<span  style="display: none;" id="bubbleInfo"></span>
 		</li>
