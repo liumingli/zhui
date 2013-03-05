@@ -3,7 +3,16 @@
  */
 package com.ybcx.zhui.facade;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import com.ybcx.zhui.beans.Memory;
+import com.ybcx.zhui.beans.Shot;
+import com.ybcx.zhui.beans.Template;
 
 
 
@@ -39,9 +48,12 @@ public class ApiAdaptor {
 		zhuiService.getAssetFile(relativePath,res);
 	}
 	
-	public void dialogueToImage(String dialogue, String fontSize,
-		 String isBold, String width, String height, HttpServletResponse res) {
-		zhuiService.dialogueToImage(dialogue,fontSize,isBold,width,height,res);
+	public void getResource(String resId, String type, HttpServletResponse res) {
+		zhuiService.getResource(resId,type,res);
+	}
+	
+	public void dialogueToImage(String userId, String dialogue, String width, String height, HttpServletResponse res) {
+		zhuiService.dialogueToImage(userId,dialogue,width,height,res);
 	}
 	
 	public String saveTemplate(String name, String swf, String thumbnail,
@@ -66,15 +78,30 @@ public class ApiAdaptor {
 		return res;
 	}
 	
-	public String saveDialogue(String content, String image, String shot,
-			String frame) {
-		String res = zhuiService.saveDialogue(content,image,shot,frame);
-		return  res;
-	}
-	
 	public String loginSystem(String account, String password) {
 		String result = zhuiService.loginSystem(account,password);
 		return result;
+	}
+	
+	public String getTemplateByCateogry(String type, String pageNum,
+			String pageSize) {
+		List<Template> list = zhuiService.getTemplateByCategory(type,pageNum,pageSize);
+		return JSONArray.fromCollection(list).toString();
+	}
+	
+	public String getShotByTemplate(String templateId) {
+		List<Shot> list = zhuiService.getShotByTemplate(templateId);
+		return JSONArray.fromCollection(list).toString();
+	}
+	
+	public String saveShotDialogue(String userId, String templateId, String content) {
+		String result = zhuiService.saveShotDialogue(userId, templateId, content);
+		return result;
+	}
+	
+	public String getDialogueAnimation(String memoryId) {
+		Memory memory = zhuiService.getDialogueAnimation(memoryId);
+		return JSONObject.fromBean(memory).toString();
 	}
 	
 	

@@ -98,7 +98,8 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 			
 			//获取图片，将图片流写到response
 		if (action.equals(AppStarter.GETTHUMBNAIL)
-				||(action.equals(AppStarter.GETASSETFILE))) {
+				|| action.equals(AppStarter.GETASSETFILE)
+				|| action.equals(AppStarter.GETRESOURCE)) {
 			
 				doGetProcess(action, req, res);
 				return;
@@ -132,6 +133,11 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 			// 根据相对路径得到相应图片/asset/123.swf
 			String relativePath = req.getParameter("relativePath");
 			apiAdaptor.getAssetFile(relativePath, res);
+			
+		}else if(action.equals(AppStarter.GETRESOURCE)){
+			String resId = req.getParameter("resId");
+			String type = req.getParameter("type");
+			apiAdaptor.getResource(resId,type,res);
 		}
 	}
 

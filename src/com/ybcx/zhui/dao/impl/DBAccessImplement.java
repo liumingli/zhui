@@ -2,6 +2,9 @@ package com.ybcx.zhui.dao.impl;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -9,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 
 import com.ybcx.zhui.beans.Dialogue;
+import com.ybcx.zhui.beans.Memory;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
 import com.ybcx.zhui.dao.DBAccessInterface;
@@ -121,4 +125,148 @@ public class DBAccessImplement  implements DBAccessInterface{
 
 		return res;
 	}
+
+	@Override
+	public List<Template> getTemplateByCategory(String type, int pageNum,
+			int pageSize) {
+		List<Template> resList = new ArrayList<Template>();
+		int startLine = (pageNum -1)*pageSize;
+		String sql = "select * from t_template where t_type='"+type+"' and t_enable=1 " +
+				"order by t_createTime desc limit "+startLine+","+pageSize;
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			for (int i = 0; i < rows.size(); i++) {
+				Map<String, Object> map = (Map<String, Object>) rows.get(i);
+				Template template = new Template();
+				template.setId(map.get("t_id").toString());
+				template.setName(map.get("t_name").toString());
+				template.setSwf(map.get("t_swf").toString());
+				template.setThumbnail(map.get("t_thumbnail").toString());
+				template.setType(map.get("t_type").toString());
+				template.setCreateTime(map.get("t_createTime").toString());
+				template.setEnable(Integer.parseInt(map.get("t_enable").toString()));
+				resList.add(template);
+			}
+		}
+		return resList;
+	}
+
+	@Override
+	public List<Shot> getShotByTemplate(String templateId) {
+		List<Shot> resList = new ArrayList<Shot>();
+		String sql = "select * from t_shot where s_template='"+templateId+"' and s_enable=1 " +
+				"order by s_frame ";
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			for (int i = 0; i < rows.size(); i++) {
+				Map<String, Object> map = (Map<String, Object>) rows.get(i);
+				Shot shot = new Shot();
+				shot.setId(map.get("s_id").toString());
+				shot.setName(map.get("s_name").toString());
+				shot.setSwf(map.get("s_swf").toString());
+				shot.setThumbnail(map.get("s_thumbnail").toString());
+				shot.setTemplate(map.get("s_template").toString());
+				shot.setFrame(Integer.parseInt(map.get("s_frame").toString()));
+				shot.setBubble(Integer.parseInt(map.get("s_bubble").toString()));
+				shot.setBubbleSize(map.get("s_bubbleSize").toString());
+				shot.setCreateTime(map.get("s_createTime").toString());
+				shot.setEnable(Integer.parseInt(map.get("s_enable").toString()));
+				resList.add(shot);
+			}
+		}
+		return resList;
+	}
+
+	@Override
+	public Shot getShotById(String shotId) {
+		Shot shot = new Shot();
+		String sql = "select * from t_shot where s_id='"+shotId+"' and s_enable=1";
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			Map<String, Object> map = (Map<String, Object>) rows.get(0);
+			shot.setId(map.get("s_id").toString());
+			shot.setName(map.get("s_name").toString());
+			shot.setSwf(map.get("s_swf").toString());
+			shot.setThumbnail(map.get("s_thumbnail").toString());
+			shot.setTemplate(map.get("s_template").toString());
+			shot.setFrame(Integer.parseInt(map.get("s_frame").toString()));
+			shot.setBubble(Integer.parseInt(map.get("s_bubble").toString()));
+			shot.setBubbleSize(map.get("s_bubbleSize").toString());
+			shot.setCreateTime(map.get("s_createTime").toString());
+			shot.setEnable(Integer.parseInt(map.get("s_enable").toString()));
+		}
+		return shot;
+	}
+
+	@Override
+	public int saveMemory(final Memory memory) {
+		String sql = "INSERT INTO t_memory "
+				+ "(m_id, m_user, m_template, m_dialogues,m_frames,m_createTime,m_enable,m_memo) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		
+		int res =jdbcTemplate.update(sql, new PreparedStatementSetter() {
+			public void setValues(PreparedStatement ps) {
+				try {
+					ps.setString(1, memory.getId());
+					ps.setString(2, memory.getUser());
+					ps.setString(3, memory.getTemplate());
+					ps.setString(4, memory.getDialogues());
+					ps.setString(5, memory.getFrames());
+					ps.setString(6, memory.getCreateTime());
+					ps.setInt(7, memory.getEnable());
+					ps.setString(8, "");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		return res;
+	}
+
+	@Override
+	public Memory getDialogueAnimation(String memoryId) {
+		Memory memory = new Memory();
+		String sql = "select * from t_memory where m_id='"+memoryId+"' and m_enable=1";
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			Map<String, Object> map = (Map<String, Object>) rows.get(0);
+			memory.setId(map.get("m_id").toString());
+			memory.setUser(map.get("m_user").toString());
+			memory.setTemplate(map.get("m_template").toString());
+			memory.setDialogues(map.get("m_dialogues").toString());
+			memory.setFrames(map.get("m_frames").toString());
+			memory.setCreateTime(map.get("m_createTime").toString());
+			memory.setEnable(Integer.parseInt(map.get("m_enable").toString()));
+		}
+		return memory;
+	}
+
+	@Override
+	public String getTemplateFilePath(String resId) {
+		String swfPath = "";
+		String sql = "select t_swf from t_template where t_id='"+resId+"'";
+		Map<String,Object> map = jdbcTemplate.queryForMap(sql);
+		swfPath = map.get("t_swf").toString();
+		return swfPath;
+	}
+
+	@Override
+	public String getShotFilePath(String resId) {
+		String swfPath = "";
+		String sql = "select s_swf from t_shot where s_id='"+resId+"'";
+		Map<String,Object> map = jdbcTemplate.queryForMap(sql);
+		swfPath = map.get("s_swf").toString();
+		return swfPath;
+	}
+
+	@Override
+	public String getDialogueFilePath(String resId) {
+		String imgPath = "";
+		String sql = "select d_image from t_dialogue where d_id='"+resId+"'";
+		Map<String,Object> map = jdbcTemplate.queryForMap(sql);
+		imgPath = map.get("d_image").toString();
+		return imgPath;
+	}
+
 }

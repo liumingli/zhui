@@ -1,7 +1,13 @@
 package com.ybcx.zhui.facade;
 
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
+
+import com.ybcx.zhui.beans.Memory;
+import com.ybcx.zhui.beans.Shot;
+import com.ybcx.zhui.beans.Template;
 
 
 
@@ -14,8 +20,9 @@ public interface ZhuiServiceInterface {
 
 	public void getAssetFile(String relativePath, HttpServletResponse res);
 
-	public void dialogueToImage(String dialogue, String fontSize,
-		String isBold, String width, String height, HttpServletResponse res);
+	public void getResource(String resId, String type, HttpServletResponse res);
+
+	public void dialogueToImage(String userId, String dialogue, String width, String height, HttpServletResponse res);
 
 	public String saveTemplate(String name, String swf, String thumbnail,
 			String type);
@@ -27,10 +34,16 @@ public interface ZhuiServiceInterface {
 
 	public String deleteShot(String id);
 
-	public String saveDialogue(String content, String image, String shot,
-			String frame);
-
 	public String loginSystem(String account, String password);
+	
+	public List<Template> getTemplateByCategory(String type, String pageNum,
+			String pageSize);
+
+	public List<Shot> getShotByTemplate(String templateId);
+
+	public String saveShotDialogue(String userId, String templateId, String content);
+
+	public Memory getDialogueAnimation(String memoryId);
 
 
 }

@@ -16,11 +16,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 
@@ -29,6 +32,7 @@ import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageDecoder;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import com.ybcx.zhui.beans.Dialogue;
+import com.ybcx.zhui.beans.Memory;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
 import com.ybcx.zhui.dao.DBAccessInterface;
@@ -201,13 +205,53 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		res.setContentType(SWF);
 		getOutInfo(imageIn, res);
 	}
+	
+	@Override
+	public void getResource(String resId, String type, HttpServletResponse res) {
+		//先根据资源类型查询出图片路径
+		String filePath = "";
+		if(("template").equals(type)){
+			filePath = dbVisitor.getTemplateFilePath(resId);
+		}else if(("shot").equals(type)){
+			filePath = dbVisitor.getShotFilePath(resId);
+		}else if(("dialogue").equals(type)){
+			filePath = dbVisitor.getDialogueFilePath(resId);
+		}else{
+			filePath= "default.png";
+		}
+		
+		//根据路径查询图片
+		try {
+			String fileType = filePath.substring(filePath.lastIndexOf(".") + 1);
+			File file = new File(imagePath+File.separator +filePath);
+			if (file.exists()) {
+				InputStream imageIn = new FileInputStream(file);
+				if(fileType.toLowerCase().equals("swf")){
+					writeSWF(imageIn,res,file);
+				}else if (fileType.toLowerCase().equals("jpg") || type.toLowerCase().equals("jpeg")) {
+					writeJPGImage(imageIn, res, file);
+				} else if (fileType.toLowerCase().equals("png")) {
+					writePNGImage(imageIn, res, file);
+				} else if (fileType.toLowerCase().equals("gif")) {
+					writeGIFImage(imageIn, res, file);
+				} 
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 
 	@Override
-	public void dialogueToImage(String dialogue, String fontSize,
-			String isBold, String width, String height,HttpServletResponse res) {
+	public void dialogueToImage(String userId,String dialogue, String width, String height,HttpServletResponse res) {
 		//将文字生成png图片并返回
 		res.setContentType(PNG);
-		String filePath = createDialogueImage(dialogue,Integer.parseInt(fontSize),Integer.parseInt(isBold),Integer.parseInt(width),Integer.parseInt(height));
+		//创建预览临时保存路径
+		String previewPath = imagePath +File.separator +userId;
+		File fp = new File(previewPath);
+		if (!fp.exists()){
+			fp.mkdir();
+		} 
+		String filePath = createDialogueImage(previewPath,dialogue,Integer.parseInt(width),Integer.parseInt(height));
 		log.info("The new image path is "+filePath);
 		File file = new File(filePath);
 		if (file.exists()) {
@@ -221,11 +265,10 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	}
 
 	
-	private String createDialogueImage(String dialogue, int fontSize, int isBold, int width, int height ) {
-
+	private String createDialogueImage(String savePath,String dialogue, int width, int height ) {
 		//命名新图片文件
 		String fileName = System.currentTimeMillis() + ".png";
-		String path = imagePath + File.separator + fileName;
+		String path = savePath + File.separator + fileName;
 		File file = new File(path);
 
 		BufferedImage bi = new BufferedImage(width, height,
@@ -240,7 +283,8 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 
 		/** 设置生成图片的文字样式 * */
 		String fontName =  systemConfigurer.getProperty("fontName").toString();
-		Font font = new Font(fontName, isBold, fontSize);
+		int fontSize = Integer.parseInt( systemConfigurer.getProperty("fontSize").toString());
+		Font font = new Font(fontName, Font.PLAIN, fontSize);
 		g2.setFont(font);
 		g2.setPaint(Color.blue);
 		
@@ -378,30 +422,6 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	}
 
 	@Override
-	public String saveDialogue(String content, String image, String shot,
-			String frame) {
-		boolean flag = false;
-		Dialogue dialogue = this.generateDialogue(content,image,shot,frame);
-		int res = dbVisitor.saveDialogue(dialogue);
-		if(res > 0){
-			flag = true;
-		}
-		return String.valueOf(flag);
-	}
-
-	private Dialogue generateDialogue(String content, String image,
-			String shot, String frame) {
-		Dialogue dialogue = new Dialogue();
-		dialogue.setId(ZhuiUtils.generateUID());
-		dialogue.setContent(content);
-		dialogue.setImage(image);
-		dialogue.setShot(shot);
-		dialogue.setFrame(Integer.parseInt(frame));
-		dialogue.setCreateTime(ZhuiUtils.getFormatNowTime());
-		return dialogue;
-	}
-
-	@Override
 	public String loginSystem(String account, String password) {
 		boolean flag = false;
 		String user = systemConfigurer.getProperty("account");
@@ -412,5 +432,121 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		return String.valueOf(flag);
 	}
 
+	@Override
+	public List<Template> getTemplateByCategory(String type, String pageNum,
+			String pageSize) {
+		List<Template> list = dbVisitor.getTemplateByCategory(type,Integer.parseInt(pageNum),Integer.parseInt(pageSize));
+		return list;
+	}
+
+	@Override
+	public List<Shot> getShotByTemplate(String templateId) {
+		List<Shot> list = dbVisitor.getShotByTemplate(templateId);
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String saveShotDialogue(String userId,String templateId,String content) {
+		StringBuffer dialogueIds = new StringBuffer();
+		StringBuffer frames = new StringBuffer();
+		//content {"shotId": "dialogue", "key": "value", ....}
+		//解析content，首先取出shotId及dialogue，
+		 JSONObject jo = JSONObject.fromObject(content);
+		 Iterator<String> iter = jo.keys();
+         while(iter.hasNext()) {  
+            String shotId = iter.next().toString();  
+            Shot shot = dbVisitor.getShotById(shotId);
+            //再根据shotId取出size和frame等信息
+            if(shot.getId() !=null && shot.getBubble() == 1){
+            	int width = 0;
+            	int height = 0;
+        		String[] arr = shot.getBubbleSize().split("[*]");
+        		width = Integer.parseInt(arr[0]);
+        		height = Integer.parseInt(arr[1]);
+            	
+            	String dialogue = jo.get(shot.getId()).toString();
+            	
+            	//生成文字图片，并存相对路径
+            	String imgPath = this.createDialogueImage(imagePath, dialogue, width, height);
+        		int position = imgPath.lastIndexOf("uploadFile");
+    			String relativePath = imgPath.substring(position+11);
+            	
+            	int frame = shot.getFrame();
+            	if (frames.length() > 0) {
+            		frames.append(",");
+				}
+            	frames.append(String.valueOf(frame));
+            	
+            	//生成对白，并将多个对白id以逗号分隔用于保存
+            	String dialogueId = this.saveDialogue(dialogue, relativePath, shotId, frame);
+            	if (dialogueIds.length() > 0) {
+            		dialogueIds.append(",");
+				}
+            	dialogueIds.append(dialogueId);
+            }
+         }  
+         
+         //保存成品
+        String result = this.saveMemory(userId,templateId,dialogueIds.toString(),frames.toString());
+		return result;
+	}
 	
+
+	//保存成品 
+	private String saveMemory(String userId, String templateId, String dialogueIds, String frames) {
+		boolean flag = false;
+		Memory memory = this.generateMemory(userId,templateId,dialogueIds,frames);
+		int res = dbVisitor.saveMemory(memory);
+		if(res > 0){
+			flag = true;
+			//TODO 这里保存成功后需删除以id命名用来保存预览图片的临时文件夹
+		}
+		return String.valueOf(flag);
+	}
+	
+	private Memory generateMemory(String userId, String templateId,
+			String dialogueIds, String frames) {
+		Memory memory = new Memory();
+		memory.setId(ZhuiUtils.generateUID());
+		memory.setUser(userId);
+		memory.setTemplate(templateId);
+		memory.setDialogues(dialogueIds);
+		memory.setFrames(frames);
+		memory.setCreateTime(ZhuiUtils.getFormatNowTime());
+		memory.setEnable(1);
+		return memory;
+	}
+
+	//保存对白
+	private String saveDialogue(String content, String image, String shot,
+			int frame) {
+		Dialogue dialogue = this.generateDialogue(content,image,shot,frame);
+		int res = dbVisitor.saveDialogue(dialogue);
+		if(res > 0){
+			return dialogue.getId();
+		}else{
+			return "false";
+		}
+	}
+
+	private Dialogue generateDialogue(String content, String image,
+			String shot, int frame) {
+		Dialogue dialogue = new Dialogue();
+		dialogue.setId(ZhuiUtils.generateUID());
+		dialogue.setContent(content);
+		dialogue.setImage(image);
+		dialogue.setShot(shot);
+		dialogue.setFrame(frame);
+		dialogue.setCreateTime(ZhuiUtils.getFormatNowTime());
+		return dialogue;
+	}
+
+	@Override
+	public Memory getDialogueAnimation(String memoryId) {
+		Memory memory = dbVisitor.getDialogueAnimation(memoryId);
+		return memory;
+	}
+
+
 }

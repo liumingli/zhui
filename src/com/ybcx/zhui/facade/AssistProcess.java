@@ -34,12 +34,11 @@ public class AssistProcess {
 
 		//将文字对白转成图片存储
 		if (action.equals(AppStarter.DIALOGUETOIMAGE)) {
+			String userId = req.getParameter("userId");
 			String dialogue = req.getParameter("dialogue");
-			String fontSize = req.getParameter("fontSize");
-			String isBold = req.getParameter("isBold");
 			String width = req.getParameter("width");
 			String height = req.getParameter("height");
-			apiAdaptor.dialogueToImage(dialogue,fontSize, isBold,width,height,res);
+			apiAdaptor.dialogueToImage(userId,dialogue,width,height,res);
 			
 		}else if(action.equals(AppStarter.SAVETEMPLATE)){
 			res.setContentType("text/plain;charset=UTF-8");
@@ -82,17 +81,6 @@ public class AssistProcess {
 			pw.write(result);
 			pw.close();
 			
-		}else if(action.equals(AppStarter.SAVEDIALOGUE)){
-			res.setContentType("text/plain;charset=UTF-8");
-			PrintWriter pw = res.getWriter();
-			String content = req.getParameter("content");
-			String image = req.getParameter("imagePath");
-			String shot = req.getParameter("shot");
-			String frame = req.getParameter("frame");
-			String result = apiAdaptor.saveDialogue(content,image,shot,frame);
-			pw.write(result);
-			pw.close();
-			
 		}else if (action.equals(AppStarter.LOGINSYSTEM)) {
 			res.setContentType("text/plain;charset=UTF-8");
 			PrintWriter pw = res.getWriter();
@@ -105,6 +93,42 @@ public class AssistProcess {
 				session.setMaxInactiveInterval(2*60*60);
 		    }
 			pw.print(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.GETTEMPLATEBYCATEGORY)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String type = req.getParameter("type");
+			String pageNum = req.getParameter("pageNum");
+			String pageSize = req.getParameter("pageSize");
+			String result = apiAdaptor.getTemplateByCateogry(type,pageNum,pageSize);
+			pw.write(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.GETSHOTBYTEMPLATE)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String templateId = req.getParameter("templateId");
+			String result = apiAdaptor.getShotByTemplate(templateId);
+			pw.write(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.SAVESHOTDIALOGUE)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String userId = req.getParameter("userId");
+			String templateId = req.getParameter("templateId");
+			String content = req.getParameter("content");
+			String result = apiAdaptor.saveShotDialogue(userId,templateId,content);
+			pw.write(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.GETDIALOGUEANIMATION)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String memoryId = req.getParameter("memoryId");
+			String result = apiAdaptor.getDialogueAnimation(memoryId);
+			pw.write(result);
 			pw.close();
 			
 		}else{

@@ -10,7 +10,9 @@ public class Memory {
 	private String user;
 	private String template;
 	private String dialogues;
+	private String frames;
 	private String createTime;
+	private int enable;
 	
 	public String getId() {
 		return id;
@@ -36,11 +38,23 @@ public class Memory {
 	public void setDialogues(String dialogues) {
 		this.dialogues = dialogues;
 	}
+	public String getFrames() {
+		return frames;
+	}
+	public void setFrames(String frames) {
+		this.frames = frames;
+	}
 	public String getCreateTime() {
 		return createTime;
 	}
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
+	}
+	public int getEnable() {
+		return enable;
+	}
+	public void setEnable(int enable) {
+		this.enable = enable;
 	}
 	
 }
