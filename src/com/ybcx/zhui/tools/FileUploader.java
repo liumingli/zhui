@@ -21,6 +21,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
+import com.ybcx.zhui.utils.ZhuiUtils;
+
 
 public class FileUploader extends HttpServlet {
 
@@ -160,14 +162,10 @@ public class FileUploader extends HttpServlet {
 				item.write(uploadFile);
 			}
 		
-			
 			log.debug(fileName + " File is complete ...");
 			
 			// 返回客户端信息 相对路径
-			String path = uploadFile.getAbsolutePath();
-			int position = path.lastIndexOf("uploadFile");
-			String relativePath = path.substring(position+11);
-			System.out.println(relativePath);
+			String relativePath = ZhuiUtils.processFilepath(uploadFile.getAbsolutePath());
 			pw.print(relativePath);
 		}
 }

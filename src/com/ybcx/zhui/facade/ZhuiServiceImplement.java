@@ -31,16 +31,18 @@ import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageDecoder;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
+import com.ybcx.zhui.beans.Case;
 import com.ybcx.zhui.beans.Dialogue;
 import com.ybcx.zhui.beans.Memory;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
 import com.ybcx.zhui.dao.DBAccessInterface;
+import com.ybcx.zhui.tools.DeleteFile;
 import com.ybcx.zhui.utils.ZhuiUtils;
 
 public class ZhuiServiceImplement implements ZhuiServiceInterface {
 
-	private Logger log = Logger.getLogger(ZhuiServiceImplement.class);
+	private static Logger log = Logger.getLogger(ZhuiServiceImplement.class);
 	
 	// 由Spring注入
 	private DBAccessInterface dbVisitor;
@@ -245,8 +247,8 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	public void dialogueToImage(String userId,String dialogue, String width, String height,HttpServletResponse res) {
 		//将文字生成png图片并返回
 		res.setContentType(PNG);
-		//创建预览临时保存路径
-		String previewPath = imagePath +File.separator +userId;
+		//FIXME 创建预览临时保存路径
+		String previewPath = imagePath +File.separator +"template"+File.separator+userId;
 		File fp = new File(previewPath);
 		if (!fp.exists()){
 			fp.mkdir();
@@ -371,12 +373,12 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	}
 
 	@Override
-	public String deleteTemplate(String id) {
+	public String deleteTemplate(String templateId) {
 		boolean flag = false;
 		//删除模板
-		int rows = dbVisitor.deleteTemplate(id);
+		int rows = dbVisitor.deleteTemplate(templateId);
 		//删除分镜头
-		int dels = dbVisitor.deleteShotByTemplate(id);
+		int dels = dbVisitor.deleteShotByTemplate(templateId);
 		if(rows ==1 &&  dels > 0){
 			flag = true;
 		}
@@ -412,9 +414,9 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	}
 
 	@Override
-	public String deleteShot(String id) {
+	public String deleteShot(String shotId) {
 		boolean flag = false;
-		int rows = dbVisitor.deleteShot(id);
+		int rows = dbVisitor.deleteShot(shotId);
 		if(rows ==1){
 			flag = true;
 		}
@@ -469,8 +471,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
             	
             	//生成文字图片，并存相对路径
             	String imgPath = this.createDialogueImage(imagePath, dialogue, width, height);
-        		int position = imgPath.lastIndexOf("uploadFile");
-    			String relativePath = imgPath.substring(position+11);
+    			String relativePath =  ZhuiUtils.processFilepath(imgPath);
             	
             	int frame = shot.getFrame();
             	if (frames.length() > 0) {
@@ -488,21 +489,40 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
          }  
          
          //保存成品
-        String result = this.saveMemory(userId,templateId,dialogueIds.toString(),frames.toString());
-		return result;
+        boolean saveResult = this.saveMemory(userId,templateId,dialogueIds.toString(),frames.toString());
+      //这里保存成功后，需删除以id命名用来保存预览图片的临时文件夹
+        if(saveResult){
+        	String tempPath = imagePath + File.separator +"template"+ File.separator +userId;
+        	deleteTempFile(tempPath);
+        }
+		return String.valueOf(saveResult);
 	}
 	
+	private static boolean deleteTempFile(String tempPath){
+		boolean result = true;
+		DeleteFile delFile = new DeleteFile();
+		File targetFolder = new File(tempPath);
+		if (targetFolder.exists() && targetFolder.isDirectory()) {
+			//文件夹，
+			result = delFile.delFolder(tempPath);
+			if(result) log.info ("folder deleted: "+tempPath);
+		}else{
+			//文件直接删除
+			result = delFile.delAllFile(tempPath);
+			if(result) log.info("file deleted: "+tempPath);
+		}
+		return result;
+	}
 
 	//保存成品 
-	private String saveMemory(String userId, String templateId, String dialogueIds, String frames) {
+	private boolean saveMemory(String userId, String templateId, String dialogueIds, String frames) {
 		boolean flag = false;
 		Memory memory = this.generateMemory(userId,templateId,dialogueIds,frames);
 		int res = dbVisitor.saveMemory(memory);
 		if(res > 0){
 			flag = true;
-			//TODO 这里保存成功后需删除以id命名用来保存预览图片的临时文件夹
 		}
-		return String.valueOf(flag);
+		return flag;
 	}
 	
 	private Memory generateMemory(String userId, String templateId,
@@ -546,6 +566,54 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	public Memory getDialogueAnimation(String memoryId) {
 		Memory memory = dbVisitor.getDialogueAnimation(memoryId);
 		return memory;
+	}
+
+	@Override
+	public List<Memory> getMemoryByUser(String userId, String pageNum,
+			String pageSize) {
+		List<Memory> list = dbVisitor.getMemoryByUser(userId,Integer.parseInt(pageNum),Integer.parseInt(pageSize));
+		return list;
+	}
+
+	@Override
+	public String saveCase(String name, String description, String swf,
+			String thumbnail) {
+		boolean flag = false;
+		Case cas = this.generateCase(name,description,swf,thumbnail);
+		int res = dbVisitor.saveCase(cas);
+		if(res > 0){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
+	private Case generateCase(String name, String description, String swf,
+			String thumbnail) {
+		Case cas = new Case();
+		cas.setId(ZhuiUtils.generateUID());
+		cas.setName(name);
+		cas.setDescription(description);
+		cas.setSwf(swf);
+		cas.setThumbnail(thumbnail);
+		cas.setDeliverTime(ZhuiUtils.getFormatNowTime());
+		cas.setEnable(1);
+		return cas;
+	}
+
+	@Override
+	public String deleteCase(String caseId) {
+		boolean flag = false;
+		int res = dbVisitor.deleteCase(caseId);
+		if(res > 0){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
+	@Override
+	public List<Case> getCase(String pageNum, String pageSize) {
+		List<Case> list = dbVisitor.getCase(Integer.parseInt(pageNum),Integer.parseInt(pageSize));
+		return list;
 	}
 
 

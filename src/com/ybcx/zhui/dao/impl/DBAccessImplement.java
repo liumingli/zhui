@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 
+import com.ybcx.zhui.beans.Case;
 import com.ybcx.zhui.beans.Dialogue;
 import com.ybcx.zhui.beans.Memory;
 import com.ybcx.zhui.beans.Shot;
@@ -52,15 +53,15 @@ public class DBAccessImplement  implements DBAccessInterface{
 	}
 
 	@Override
-	public int deleteTemplate(String id) {
-		String sql = "update t_template set t_enable = 0 where t_id ='"+id+"'";
+	public int deleteTemplate(String templateId) {
+		String sql = "update t_template set t_enable = 0 where t_id ='"+templateId+"'";
 		int rows = jdbcTemplate.update(sql);
 		return rows;
 	}
 
 	@Override
-	public int deleteShotByTemplate(String id) {
-		String sql = "update t_shot set s_enable = 0 where s_template ='"+id+"'";
+	public int deleteShotByTemplate(String templateId) {
+		String sql = "update t_shot set s_enable = 0 where s_template ='"+templateId+"'";
 		int rows = jdbcTemplate.update(sql);
 		return rows;
 	}
@@ -95,8 +96,8 @@ public class DBAccessImplement  implements DBAccessInterface{
 	}
 
 	@Override
-	public int deleteShot(String id) {
-		String sql = "update t_shot set s_enable = 0 where s_id ='"+id+"'";
+	public int deleteShot(String shotId) {
+		String sql = "update t_shot set s_enable = 0 where s_id ='"+shotId+"'";
 		int rows = jdbcTemplate.update(sql);
 		return rows;
 	}
@@ -267,6 +268,87 @@ public class DBAccessImplement  implements DBAccessInterface{
 		Map<String,Object> map = jdbcTemplate.queryForMap(sql);
 		imgPath = map.get("d_image").toString();
 		return imgPath;
+	}
+
+	@Override
+	public List<Memory> getMemoryByUser(String userId, int pageNum, int pageSize) {
+		List<Memory> resList = new ArrayList<Memory>();
+		int startLine = (pageNum -1)*pageSize;
+		String sql = "select * from t_memory where m_user='"+userId+"' and m_enable=1 " +
+				"order by m_createTime desc limit "+startLine+","+pageSize;
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			for (int i = 0; i < rows.size(); i++) {
+				Map<String, Object> map = (Map<String, Object>) rows.get(i);
+				Memory memory = new Memory();
+				memory.setId(map.get("m_id").toString());
+				memory.setUser(map.get("m_user").toString());
+				memory.setTemplate(map.get("m_template").toString());
+				memory.setDialogues(map.get("m_dialogues").toString());
+				memory.setFrames(map.get("m_frames").toString());
+				memory.setCreateTime(map.get("m_createTime").toString());
+				memory.setEnable(Integer.parseInt(map.get("m_enable").toString()));
+				resList.add(memory);
+			}
+		}
+		return resList;
+	}
+
+	@Override
+	public int saveCase(final Case cas) {
+		String sql = "INSERT INTO t_case "
+				+ "(c_id, c_name, c_swf, c_thumbnail, c_description, c_deliverTime,c_enable,c_memo) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		
+		int res =jdbcTemplate.update(sql, new PreparedStatementSetter() {
+			public void setValues(PreparedStatement ps) {
+				try {
+					ps.setString(1, cas.getId());
+					ps.setString(2, cas.getName());
+					ps.setString(3, cas.getSwf());
+					ps.setString(4, cas.getThumbnail());
+					ps.setString(5, cas.getDescription());
+					ps.setString(6, cas.getDeliverTime());
+					ps.setInt(7, cas.getEnable());
+					ps.setString(8, "");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		return res;
+	}
+
+	@Override
+	public int deleteCase(String caseId) {
+		String sql = "update t_case set c_enable = 0 where c_id ='"+caseId+"'";
+		int rows = jdbcTemplate.update(sql);
+		return rows;
+	}
+
+	@Override
+	public List<Case> getCase(int pageNum, int pageSize) {
+		List<Case> resList = new ArrayList<Case>();
+		int startLine = (pageNum -1)*pageSize;
+		String sql = "select * from t_case where c_enable=1 " +
+				"order by c_deliverTime desc limit "+startLine+","+pageSize;
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			for (int i = 0; i < rows.size(); i++) {
+				Map<String, Object> map = (Map<String, Object>) rows.get(i);
+				Case cas = new Case();
+				cas.setId(map.get("c_id").toString());
+				cas.setName(map.get("c_name").toString());
+				cas.setDescription(map.get("c_description").toString());
+				cas.setSwf(map.get("c_swf").toString());
+				cas.setThumbnail(map.get("c_thumbnail").toString());
+				cas.setDeliverTime(map.get("c_deliverTime").toString());
+				cas.setEnable(Integer.parseInt(map.get("c_enable").toString()));
+				resList.add(cas);
+			}
+		}
+		return resList;
 	}
 
 }

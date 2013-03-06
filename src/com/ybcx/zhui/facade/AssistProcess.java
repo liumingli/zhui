@@ -54,8 +54,8 @@ public class AssistProcess {
 		}else if(action.equals(AppStarter.DELETETEMPLATE)){
 			res.setContentType("text/plain;charset=UTF-8");
 			PrintWriter pw = res.getWriter();
-			String id = req.getParameter("id");
-			String result = apiAdaptor.deleteTemplate(id);
+			String templateId = req.getParameter("templateId");
+			String result = apiAdaptor.deleteTemplate(templateId);
 			pw.write(result);
 			pw.close();
 		
@@ -76,8 +76,8 @@ public class AssistProcess {
 		}else if(action.equals(AppStarter.DELETESHOT)){
 			res.setContentType("text/plain;charset=UTF-8");
 			PrintWriter pw = res.getWriter();
-			String id = req.getParameter("id");
-			String result = apiAdaptor.deleteShot(id);
+			String shotId = req.getParameter("shotId");
+			String result = apiAdaptor.deleteShot(shotId);
 			pw.write(result);
 			pw.close();
 			
@@ -128,6 +128,44 @@ public class AssistProcess {
 			PrintWriter pw = res.getWriter();
 			String memoryId = req.getParameter("memoryId");
 			String result = apiAdaptor.getDialogueAnimation(memoryId);
+			pw.write(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.GETMEMORYBYUSER)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String userId = req.getParameter("userId");
+			String pageNum = req.getParameter("pageNum");
+			String pageSize = req.getParameter("pageSize");
+			String result = apiAdaptor.getMemoryByUser(userId,pageNum,pageSize);
+			pw.write(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.SAVECASE)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String name = req.getParameter("name");
+			String description = req.getParameter("description");
+			String swf = req.getParameter("swfPath");
+			String thumbnail = req.getParameter("thumbnailPath");
+			String result = apiAdaptor.saveCase(name,description,swf,thumbnail);
+			pw.write(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.DELECTCASE)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String caseId = req.getParameter("caseId");
+			String result = apiAdaptor.deleteCase(caseId);
+			pw.write(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.GETCASE)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String pageNum = req.getParameter("pageNum");
+			String pageSize = req.getParameter("pageSize");
+			String result = apiAdaptor.getCase(pageNum,pageSize);
 			pw.write(result);
 			pw.close();
 			

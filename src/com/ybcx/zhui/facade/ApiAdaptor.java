@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import com.ybcx.zhui.beans.Case;
 import com.ybcx.zhui.beans.Memory;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
@@ -62,8 +63,8 @@ public class ApiAdaptor {
 		return res;
 	}
 	
-	public String deleteTemplate(String id) {
-		String res = zhuiService.deleteTemplate(id);
+	public String deleteTemplate(String templateId) {
+		String res = zhuiService.deleteTemplate(templateId);
 		return res;
 	}
 	
@@ -73,8 +74,8 @@ public class ApiAdaptor {
 		return res;
 	}
 	
-	public String deleteShot(String id) {
-		String res = zhuiService.deleteShot(id);
+	public String deleteShot(String shotId) {
+		String res = zhuiService.deleteShot(shotId);
 		return res;
 	}
 	
@@ -102,6 +103,26 @@ public class ApiAdaptor {
 	public String getDialogueAnimation(String memoryId) {
 		Memory memory = zhuiService.getDialogueAnimation(memoryId);
 		return JSONObject.fromBean(memory).toString();
+	}
+	
+	public String getMemoryByUser(String userId, String pageNum, String pageSize) {
+		List<Memory> list = zhuiService.getMemoryByUser(userId,pageNum,pageSize);
+		return JSONArray.fromCollection(list).toString();
+	}
+	
+	public String saveCase(String name, String description, String swf,
+			String thumbnail) {
+		String result = zhuiService.saveCase(name,description,swf,thumbnail);
+		return result;
+	}
+	
+	public String deleteCase(String caseId) {
+		String result = zhuiService.deleteCase(caseId);
+		return result;
+	}
+	public String getCase(String pageNum, String pageSize) {
+		List<Case> list = zhuiService.getCase(pageNum,pageSize);
+		return JSONArray.fromCollection(list).toString();
 	}
 	
 	

@@ -43,9 +43,21 @@ public interface ExtVisitorInterface {
 	//保存分镜头对白
 	public static final String SAVESHOTDIALOGUE = "saveShotDialogue";
 	
-	//取成品动画
+	//取成品动画，播放用
 	public static final String GETDIALOGUEANIMATION = "getDialogueAnimation";
 	
 	//根据资源resId和type得图片流 
 	public static final String GETRESOURCE = "getResource";
+	
+	//根据用户取成品
+	public static final String GETMEMORYBYUSER = "getMemoryByUser";
+	
+	//添加精彩案例
+	public static final String SAVECASE = "saveCase";
+	
+	//删除精彩案例
+	public static final String DELECTCASE = "delectCase";
+	
+	//取案例
+	public static final String GETCASE = "getCase";
 }

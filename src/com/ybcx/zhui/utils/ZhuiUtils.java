@@ -22,4 +22,11 @@ public class ZhuiUtils {
 		return simpledDateFormat.format(date);
 	}
 	
+	//把绝对路径转成相对路径 
+	public static String processFilepath(String absolutePath){
+		int position = absolutePath.lastIndexOf("uploadFile");
+		String relativePath = absolutePath.substring(position+11);
+		return relativePath;
+	}
+	
 }
