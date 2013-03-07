@@ -351,4 +351,11 @@ public class DBAccessImplement  implements DBAccessInterface{
 		return resList;
 	}
 
+	@Override
+	public int getCaseCount() {
+		String sql = "select count(c_id) from t_case where c_enable=1";
+		int res = jdbcTemplate.queryForInt(sql);
+		return res;
+	}
+
 }

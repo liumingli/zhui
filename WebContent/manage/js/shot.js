@@ -122,18 +122,16 @@ function checkNum(){
 	var val = $("#frame").val();
 	if(isNaN(val)){
 		 $('#frameInfo').show().html('<font color="red" size="2">*请输入数字</font>');
+		 $("#frame").focus();
 	}else{
 		var r = /^\+?[1-9][0-9]*$/;//正整数 
 		if(r.test(val)){
 			 $('#frameInfo').hide();
 		}else{
 			 $('#frameInfo').show().html('<font color="red" size="2">*帧数必须大于0</font>');
+			 $("#frame").focus();
 		}
 	}
-}
-
-function cancelFrame(){
-	$("#frame").val("");
 }
 
 function hasBubbleClick(){
@@ -153,6 +151,7 @@ function checkBubbleSize(){
 	var s = size.indexOf("*");
 	if(s==-1){
 		 $('#bubbleInfo').show().html('<font color="red" size="2">如200*150</font>');
+		 $("#bubbleSize").focus();
 	}else{
 		$('#bubbleInfo').hide();
 	}

@@ -46,8 +46,11 @@ public interface DBAccessInterface {
 	public int saveCase(Case cas);
 
 	public int deleteCase(String caseId);
+	
+	public int getCaseCount();
 
 	public List<Case> getCase(int pageNum, int pageSize);
+
 
 		
 }

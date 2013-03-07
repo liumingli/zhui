@@ -609,6 +609,13 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		}
 		return String.valueOf(flag);
 	}
+	
+	@Override
+	public int getCaseCount() {
+		int result = dbVisitor.getCaseCount();
+		return result;
+	}
+
 
 	@Override
 	public List<Case> getCase(String pageNum, String pageSize) {

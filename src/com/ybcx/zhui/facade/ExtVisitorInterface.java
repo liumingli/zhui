@@ -56,8 +56,11 @@ public interface ExtVisitorInterface {
 	public static final String SAVECASE = "saveCase";
 	
 	//删除精彩案例
-	public static final String DELECTCASE = "delectCase";
+	public static final String DELETECASE = "deleteCase";
 	
-	//取案例
+	//获取案例数目
+	public static final String GETCASECOUNT = "getCaseCount";
+	
+	//分页取案例
 	public static final String GETCASE = "getCase";
 }

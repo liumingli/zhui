@@ -120,10 +120,17 @@ public class ApiAdaptor {
 		String result = zhuiService.deleteCase(caseId);
 		return result;
 	}
+	
+	public int getCaseCount() {
+		int result = zhuiService.getCaseCount();
+		return result;
+	}
+	
 	public String getCase(String pageNum, String pageSize) {
 		List<Case> list = zhuiService.getCase(pageNum,pageSize);
 		return JSONArray.fromCollection(list).toString();
 	}
+
 	
 	
 

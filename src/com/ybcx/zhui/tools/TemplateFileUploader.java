@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 import com.ybcx.zhui.utils.ZhuiUtils;
 
 
-public class FileUploader extends HttpServlet {
+public class TemplateFileUploader extends HttpServlet {
 
 	private static final long serialVersionUID = -543085089916376144L;
 
@@ -34,12 +34,12 @@ public class FileUploader extends HttpServlet {
 	// 最大文件上传尺寸设置
 	private int fileMaxSize = 8 * 1024 * 1024;
 	
-	private Logger log = Logger.getLogger(FileUploader.class);
+	private Logger log = Logger.getLogger(TemplateFileUploader.class);
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public FileUploader() {
+	public TemplateFileUploader() {
 		super();
 	}
 

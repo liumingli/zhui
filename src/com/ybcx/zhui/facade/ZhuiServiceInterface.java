@@ -53,7 +53,10 @@ public interface ZhuiServiceInterface {
 			String thumbnail);
 
 	public String deleteCase(String caseId);
+	
+	public int getCaseCount();
 
 	public List<Case> getCase(String pageNum, String pageSize);
+
 
 }

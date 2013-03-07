@@ -1,5 +1,6 @@
 package com.ybcx.zhui.utils;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -29,4 +30,13 @@ public class ZhuiUtils {
 		return relativePath;
 	}
 	
+	//根据路径删除指定文件
+	public static boolean deleteFileByPath(String absolutePath){
+		boolean flag = false;
+		File file = new File(absolutePath);
+		if(file.exists()){
+			flag = file.delete();
+		}
+		return flag;
+	}
 }

@@ -48,7 +48,7 @@ public class AssistProcess {
 			String thumbnail = req.getParameter("thumbnailPath");
 			String type = req.getParameter("type");
 			String result = apiAdaptor.saveTemplate(name,swf,thumbnail,type);
-			pw.write(result);
+			pw.print(result);
 			pw.close();
 			
 		}else if(action.equals(AppStarter.DELETETEMPLATE)){
@@ -56,7 +56,7 @@ public class AssistProcess {
 			PrintWriter pw = res.getWriter();
 			String templateId = req.getParameter("templateId");
 			String result = apiAdaptor.deleteTemplate(templateId);
-			pw.write(result);
+			pw.print(result);
 			pw.close();
 		
 		}else if(action.equals(AppStarter.SAVESHOT)){
@@ -70,7 +70,7 @@ public class AssistProcess {
 			String bubble = req.getParameter("bubble");
 			String bubbleSize = req.getParameter("bubbleSize");
 			String result = apiAdaptor.saveShot(name,swf,thumbnail,template,frame,bubble,bubbleSize);
-			pw.write(result);
+			pw.print(result);
 			pw.close();
 			
 		}else if(action.equals(AppStarter.DELETESHOT)){
@@ -78,7 +78,7 @@ public class AssistProcess {
 			PrintWriter pw = res.getWriter();
 			String shotId = req.getParameter("shotId");
 			String result = apiAdaptor.deleteShot(shotId);
-			pw.write(result);
+			pw.print(result);
 			pw.close();
 			
 		}else if (action.equals(AppStarter.LOGINSYSTEM)) {
@@ -102,7 +102,7 @@ public class AssistProcess {
 			String pageNum = req.getParameter("pageNum");
 			String pageSize = req.getParameter("pageSize");
 			String result = apiAdaptor.getTemplateByCateogry(type,pageNum,pageSize);
-			pw.write(result);
+			pw.print(result);
 			pw.close();
 			
 		}else if(action.equals(AppStarter.GETSHOTBYTEMPLATE)){
@@ -110,7 +110,7 @@ public class AssistProcess {
 			PrintWriter pw = res.getWriter();
 			String templateId = req.getParameter("templateId");
 			String result = apiAdaptor.getShotByTemplate(templateId);
-			pw.write(result);
+			pw.print(result);
 			pw.close();
 			
 		}else if(action.equals(AppStarter.SAVESHOTDIALOGUE)){
@@ -120,7 +120,7 @@ public class AssistProcess {
 			String templateId = req.getParameter("templateId");
 			String content = req.getParameter("content");
 			String result = apiAdaptor.saveShotDialogue(userId,templateId,content);
-			pw.write(result);
+			pw.print(result);
 			pw.close();
 			
 		}else if(action.equals(AppStarter.GETDIALOGUEANIMATION)){
@@ -128,7 +128,7 @@ public class AssistProcess {
 			PrintWriter pw = res.getWriter();
 			String memoryId = req.getParameter("memoryId");
 			String result = apiAdaptor.getDialogueAnimation(memoryId);
-			pw.write(result);
+			pw.print(result);
 			pw.close();
 			
 		}else if(action.equals(AppStarter.GETMEMORYBYUSER)){
@@ -138,7 +138,7 @@ public class AssistProcess {
 			String pageNum = req.getParameter("pageNum");
 			String pageSize = req.getParameter("pageSize");
 			String result = apiAdaptor.getMemoryByUser(userId,pageNum,pageSize);
-			pw.write(result);
+			pw.print(result);
 			pw.close();
 			
 		}else if(action.equals(AppStarter.SAVECASE)){
@@ -149,15 +149,22 @@ public class AssistProcess {
 			String swf = req.getParameter("swfPath");
 			String thumbnail = req.getParameter("thumbnailPath");
 			String result = apiAdaptor.saveCase(name,description,swf,thumbnail);
-			pw.write(result);
+			pw.print(result);
 			pw.close();
 			
-		}else if(action.equals(AppStarter.DELECTCASE)){
+		}else if(action.equals(AppStarter.DELETECASE)){
 			res.setContentType("text/plain;charset=UTF-8");
 			PrintWriter pw = res.getWriter();
 			String caseId = req.getParameter("caseId");
 			String result = apiAdaptor.deleteCase(caseId);
-			pw.write(result);
+			pw.print(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.GETCASECOUNT)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			int result = apiAdaptor.getCaseCount();
+			pw.print(result);
 			pw.close();
 			
 		}else if(action.equals(AppStarter.GETCASE)){
@@ -166,7 +173,7 @@ public class AssistProcess {
 			String pageNum = req.getParameter("pageNum");
 			String pageSize = req.getParameter("pageSize");
 			String result = apiAdaptor.getCase(pageNum,pageSize);
-			pw.write(result);
+			pw.print(result);
 			pw.close();
 			
 		}else{

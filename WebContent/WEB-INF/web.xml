@@ -70,13 +70,13 @@
    
    
    <servlet>
-    	<description>素材上传并保存</description>
-    	<display-name>FileUploader</display-name>
-    	<servlet-name>FileUploader</servlet-name>
-    	<servlet-class>com.ybcx.zhui.tools.FileUploader</servlet-class>
+    	<description>模板素材上传并保存</description>
+    	<display-name>TemplateFileUploader</display-name>
+    	<servlet-name>TemplateFileUploader</servlet-name>
+    	<servlet-class>com.ybcx.zhui.tools.TemplateFileUploader</servlet-class>
     	<init-param> 
             <param-name>assetpath</param-name> 
-            <param-value>/WEB-INF/uploadFile</param-value> 
+            <param-value>/WEB-INF/uploadFile/template</param-value> 
         </init-param> 
         <init-param> 
             <param-name>temppath</param-name> 
@@ -84,10 +84,28 @@
         </init-param> 
     </servlet>  
     <servlet-mapping>
-    	<servlet-name>FileUploader</servlet-name>
-    	<url-pattern>/fileupload</url-pattern>
+    	<servlet-name>TemplateFileUploader</servlet-name>
+    	<url-pattern>/templateFileUpload</url-pattern>
     </servlet-mapping>
 
+   <servlet>
+    	<description>案例素材上传并保存</description>
+    	<display-name>CaseFileUploader</display-name>
+    	<servlet-name>CaseFileUploader</servlet-name>
+    	<servlet-class>com.ybcx.zhui.tools.CaseFileUploader</servlet-class>
+    	<init-param> 
+            <param-name>assetpath</param-name> 
+            <param-value>/WEB-INF/uploadFile/case</param-value> 
+        </init-param> 
+        <init-param> 
+            <param-name>temppath</param-name> 
+            <param-value>/WEB-INF/temp</param-value> 
+        </init-param> 
+    </servlet>  
+    <servlet-mapping>
+    	<servlet-name>CaseFileUploader</servlet-name>
+    	<url-pattern>/caseFileUpload</url-pattern>
+    </servlet-mapping>
 
 	<!-- 限制后台管理不能直接访问.html，必须登录 -->
 	<filter>
