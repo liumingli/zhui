@@ -623,5 +623,27 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		return list;
 	}
 
+	@Override
+	public int getTemplateCount() {
+		int result = dbVisitor.getTemplateCount();
+		return result;
+	}
+
+	@Override
+	public List<Template> getTemplate(String pageNum, String pageSize) {
+		List<Template> list = dbVisitor.getTemplate(Integer.parseInt(pageNum),Integer.parseInt(pageSize));
+		return list;
+	}
+
+	@Override
+	public String updateShot(String shotId, String frame, String bubbleSize) {
+		boolean flag = false;
+		int res = dbVisitor.updateShot(shotId,Integer.parseInt(frame),bubbleSize);
+		if(res > 0){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
 
 }

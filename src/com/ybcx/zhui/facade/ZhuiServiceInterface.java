@@ -58,5 +58,11 @@ public interface ZhuiServiceInterface {
 
 	public List<Case> getCase(String pageNum, String pageSize);
 
+	public int getTemplateCount();
+
+	public List<Template> getTemplate(String pageNum, String pageSize);
+
+	public String updateShot(String shotId, String frame, String bubbleSize);
+
 
 }

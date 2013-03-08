@@ -63,4 +63,13 @@ public interface ExtVisitorInterface {
 	
 	//分页取案例
 	public static final String GETCASE = "getCase";
+	
+	//获取模板的总数
+	public static final String GETTEMPLATECOUNT = "getTemplateCount";
+	
+	//分页获取模板
+	public static final String GETTEMPLATE = "getTemplate";
+	
+	//更新分镜头
+	public static final String UPDATESHOT = "updateShot";
 }

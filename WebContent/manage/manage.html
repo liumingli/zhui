@@ -3,42 +3,73 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>素材管理</title>
-<link rel="stylesheet" type="text/css"  charset="utf-8" href="css/style.css" />
-
+<link rel="stylesheet" type="text/css" charset="utf-8" href="css/template.css" />
+<link rel="stylesheet" type="text/css"  charset="utf-8" href="css/popup.css" />
+	
 <script type="text/javascript" src="js/jquery.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/jquery.ui.widget.js"
+	charset="utf-8"></script>
+<script type="text/javascript" src="js/jquery.iframe-transport.js"
+	charset="utf-8"></script>
+<script type="text/javascript" src="js/jquery.fileupload.js"
+	charset="utf-8"></script>
 
+<script type="text/javascript" src="js/manage.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/popup.js" charset="utf-8"></script>
 
 </head>
-<body>
 
-<!-- <input type="text" id="keys"  placeholder="以空格分隔多个关键字" /> -->
-<!-- <input type="button" id="search" value="搜索" onclick="searchAssets();"> -->
-<!-- <input type="button" id="create" value="上传新素材" onclick="uploadAssets();"> -->
-<!-- <input type="button" id="all" value="显示全部素材" onclick="getAllAssets();"> -->
-<!-- <table id="mytable"> -->
-<!-- 	<thead> -->
-<!-- 		<tr> -->
-<!-- 		<td>序号</td><td>名称</td><td>缩略图</td><td>价格</td> -->
-<!-- 		<td>上传时间</td><td>类型</td><td>分类</td><td>标签</td> -->
-<!-- 		<td>节假日</td>	<td>编辑</td><td>删除</td> -->
-<!-- 		</tr> -->
-<!-- 	</thead> -->
-<!-- 	<tbody id="assetsList"> -->
-<!-- 		<tr> -->
-<!-- 			<td colspan="11"><img alt="loading" src="imgs/loading.gif"></td> -->
-<!-- 		</tr> -->
-<!-- 	</tbody> -->
-<!-- </table> -->
-
-<!-- <div id="paging"> -->
-<!-- 	<span id="firstPage"><a href="javascript:getFirstpage()">第一页</a></span> -->
-<!-- 	<span id="prevPage"><a href="javascript:getPrevpage()">上一页</a></span> -->
-<!-- 	<span id="nextPage"><a href="javascript:getNextpage()">下一页</a></span> -->
-<!-- 	<span id="lastPage"><a href="javascript:getLastpage()">最后一页</a></span> -->
-<!-- 	<span id="currentPage">当前第<span id="current"></span>页</span> -->
-<!-- 	<span id="totalPage">共<span id="total"></span>页</span> -->
-<!-- </div> -->
-
-
+<body onload="getTemplate();">
+<div id="caption">
+	<b>模板素材列表</b>
+	<div id="banner"><input type="button" id="upload"  value="上传模板"  onclick="uploadTemplate();"></div>
+</div>
+	<input type="hidden" id="template">
+	
+	<table>
+		<tbody id="templateList">
+			<tr id="line1">
+				<td rowspan="3"  style="border:0px">	
+					<span id="previous" ><a href="javascript:getPrevpage()"><img src="imgs/left.png" title="上一页"/></a></span>
+				</td>
+				<td id="ele10"></td><td id="ele11"></td><td id="ele12"></td><td id="ele13"></td>
+				<td rowspan="3" style="border:0px">
+					<span id="next" ><a href="javascript:getNextpage()"><img src="imgs/right.png" title="下一页"/></a></span>
+				</td>
+			</tr>
+			<tr id="line2">
+				<td id="ele24"></td><td id="ele25"></td><td id="ele26"></td><td id="ele27"></td>
+			</tr>
+			<tr id="line3">
+				<td id="ele38"></td><td id="ele39"></td><td id="ele310"></td><td id="ele311"></td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<div id="page">
+		<span id="currentPage">第<span id="current">0</span>页</span>
+		<span id="totalPage">共<span id="total">0</span>页</span>
+	</div>
+	
+	<div id="popupContact" style="display:none">  
+	 	<h2>编辑分镜头</h2>
+		<a id="popupContactClose" href="javascript:disablePopup();"><img src="imgs/close.png" alt="关闭"/></a>  
+		<div>
+			<input type="hidden" id="parent">
+			<input type="hidden" id="shot">
+			<label>帧数</label>
+			<input type="text" id="frame" style="width:30px" onblur="checkNum();">
+			<span  style="display: none;" id="frameInfo"></span><br>
+			
+			<label>气泡大小</label>
+			<input type="text" id="bubbleSize"  style="width:80px"  onblur="checkBubbleSize();">
+			<span  style="display: none;" id="bubbleInfo"></span><br>
+			
+			<input type="button" id="submit" value="提交" onclick="updateShot();"><br>
+			<span  style="display: none;" id="prompt"></span>
+		</div>
+	</div>
+	
+	<div id="backgroundPopup" onclick="disablePopup();"></div> 
 </body>
 </html>

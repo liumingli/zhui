@@ -358,4 +358,42 @@ public class DBAccessImplement  implements DBAccessInterface{
 		return res;
 	}
 
+	@Override
+	public int getTemplateCount() {
+		String sql = "select count(t_id) from t_template where t_enable=1";
+		int res = jdbcTemplate.queryForInt(sql);
+		return res;
+	}
+
+	@Override
+	public List<Template> getTemplate(int pageNum, int pageSize) {
+		List<Template> resList = new ArrayList<Template>();
+		int startLine = (pageNum -1)*pageSize;
+		String sql = "select * from t_template where t_enable=1 " +
+				"order by t_createTime desc limit "+startLine+","+pageSize;
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			for (int i = 0; i < rows.size(); i++) {
+				Map<String, Object> map = (Map<String, Object>) rows.get(i);
+				Template template = new Template();
+				template.setId(map.get("t_id").toString());
+				template.setName(map.get("t_name").toString());
+				template.setSwf(map.get("t_swf").toString());
+				template.setThumbnail(map.get("t_thumbnail").toString());
+				template.setType(map.get("t_type").toString());
+				template.setCreateTime(map.get("t_createTime").toString());
+				template.setEnable(Integer.parseInt(map.get("t_enable").toString()));
+				resList.add(template);
+			}
+		}
+		return resList;
+	}
+
+	@Override
+	public int updateShot(String shotId, int frame, String bubbleSize) {
+		String sql = "update t_shot set s_frame="+frame+", s_bubbleSize='"+bubbleSize+"' where s_id='"+shotId+"'";
+		int res = jdbcTemplate.update(sql);
+		return res;
+	}
+
 }

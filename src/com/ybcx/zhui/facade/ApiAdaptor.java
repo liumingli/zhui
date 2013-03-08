@@ -130,6 +130,21 @@ public class ApiAdaptor {
 		List<Case> list = zhuiService.getCase(pageNum,pageSize);
 		return JSONArray.fromCollection(list).toString();
 	}
+	
+	public int getTemplateCount() {
+		int result = zhuiService.getTemplateCount();
+		return result;
+	}
+	
+	public String getTemplate(String pageNum, String pageSize) {
+		List<Template> list = zhuiService.getTemplate(pageNum,pageSize);
+		return JSONArray.fromCollection(list).toString();
+	}
+	
+	public String updateShot(String shotId, String frame, String bubbleSize) {
+		String result = zhuiService.updateShot(shotId,frame,bubbleSize);
+		return result;
+	}
 
 	
 	

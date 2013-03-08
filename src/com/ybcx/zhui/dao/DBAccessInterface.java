@@ -50,7 +50,13 @@ public interface DBAccessInterface {
 	public int getCaseCount();
 
 	public List<Case> getCase(int pageNum, int pageSize);
+	
+	public int getTemplateCount();
+
+	public List<Template> getTemplate(int pageNum, int pageSize);
+
+	public int updateShot(String shotId, int frame, String bubbleSize);
 
 
-		
+
 }

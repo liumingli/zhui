@@ -176,6 +176,32 @@ public class AssistProcess {
 			pw.print(result);
 			pw.close();
 			
+		}else if(action.equals(AppStarter.GETTEMPLATECOUNT)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			int result = apiAdaptor.getTemplateCount();
+			pw.print(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.GETTEMPLATE)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String pageNum = req.getParameter("pageNum");
+			String pageSize = req.getParameter("pageSize");
+			String result = apiAdaptor.getTemplate(pageNum,pageSize);
+			pw.print(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.UPDATESHOT)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String shotId = req.getParameter("shotId");
+			String frame = req.getParameter("frame");
+			String bubbleSize = req.getParameter("bubbleSize");
+			String result = apiAdaptor.updateShot(shotId,frame,bubbleSize);
+			pw.print(result);
+			pw.close();
+			
 		}else{
 			
 		}

@@ -1,0 +1,70 @@
+body{
+  font-family:Arial,Helvetica,sans-serif,"宋体";
+  font-size: 13px;
+  position: relative;
+  height: 100%;
+}
+
+#caption{
+	font-size: larger;
+	text-align: center;
+}
+
+#banner{
+	padding-left:600px;
+}
+
+#reback{
+	padding-left:12px;
+}
+
+#page{
+	text-align: center;
+}
+
+table{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 12px;
+	margin:20px auto; 
+	border-collapse: collapse;
+/* 	border: 1px solid gray; */
+	text-align: center;
+}
+
+tr{
+	padding: 5px;
+	font-weight: normal;
+	color: #039;
+/* 	border-bottom: 1px dashed gray; */
+}
+
+td{
+	width:240px;
+	height:160px;
+	padding: 5px;
+	color: #669;
+	border: 1px solid gray; 
+}
+
+a {
+	text-decoration: none;
+}
+a.line {
+	text-decoration: underline;
+}
+a: hover {
+	text-decoration: underline;
+}
+a,a: link,a: visited {
+	color: #0082cb;
+}
+a: hover {
+	color: #390;
+}
+
+img{
+	padding:5px;
+	vertical-align:middle;
+}
+
+
