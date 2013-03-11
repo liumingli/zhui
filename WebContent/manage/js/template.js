@@ -112,6 +112,7 @@ function emptyForm(){
 function addShotPanel(nameParam,templateParam){
 	window.parent.frames['topFrame'].document.getElementById("shotUpload").style.color = "#ff9966";
 	window.parent.frames['topFrame'].document.getElementById("templateUpload").style.color = "#eee";
+	staticVal="shotUpload";
 	window.parent.frames['mainFrame'].location.href = "shotUpload.html?name="+nameParam+"&id="+templateParam;
 }
 

@@ -2,6 +2,7 @@
 function uploadTemplate(){
 	window.parent.frames['topFrame'].document.getElementById("templateUpload").style.color = "#ff9966";
 	window.parent.frames['topFrame'].document.getElementById("manage").style.color = "#eee";
+	staticVal = "templateUpload";
 	window.parent.frames['mainFrame'].location.href = "templateUpload.html";
 }
 
@@ -12,7 +13,15 @@ function uploadShot(){
     var name = $("#parent").val();
     window.parent.frames['topFrame'].document.getElementById("shotUpload").style.color = "#ff9966";
 	window.parent.frames['topFrame'].document.getElementById("manage").style.color = "#eee";
+	staticVal = "shotUpload";
 	window.location.href = encodeURI("shotUpload.html?id="+id+"&name="+name);
+}
+
+
+function changeCss() {
+	 var o = document.getElementById('funsion');
+	 o.setAttribute('href', 'css/style.css');
+	 console.log(o.getAttribute('href'));
 }
 
 function getTemplate(){
@@ -194,16 +203,21 @@ function checkBubbleSize(){
 
 function checkNull(){
 	 $('#prompt').show().html('');
-	var bubbleSize = 	$("#bubbleSize").val();
 	var val = $("#frame").val();
 	var r = /^\+?[1-9][0-9]*$/;//正整数 
-	
-	if(bubbleSize != null && bubbleSize != "" &&  r.test(val)){
+	var size = $("#bubbleSize").val();
+	var s = size.indexOf("*");
+	if((s != -1 || size == "0")&&  r.test(val)){
 		return true;
 	}else{
 		$('#prompt').show().html('<font color="red" size="2">提示：</font>');
-		if(name == null || name == "" ){
-			$('#prompt').append('<font color="red" size="2">请输入名称</font><br>');
+		var size = $("#bubbleSize").val();
+		if(size != "0"){
+			var s = size.indexOf("*");
+			if(s==-1){
+				$("#bubbleSize").focus();
+				$('#prompt').append('<font color="red" size="2">气泡格式如200*150</font><br>');
+			}
 		}
 		if(!r.test(val)){
 			 $('#prompt').append('<font color="red" size="2">帧数需为正整数</font><br>');
@@ -215,7 +229,7 @@ function checkNull(){
 function getShot(id,name){
 		$("#caption").html('<b>分镜头素材列表</b> (所属模板：'+name+')'+
 				'<div id="banner"><input type="button" value="添加分镜头" onclick="uploadShot();">'+
-				'<input type="button" value="返回模板列表" onclick="window.location.reload();"></div>');
+				'<input type="button" value="返回模板" onclick="window.location.reload();"></div>');
 		//主模板的id
 		$('#template').attr("value",id);
 		$('#parent').attr("value",name);
@@ -235,22 +249,85 @@ function getShotByTemplateAndPage(pageNum,id){
 	},"json");
 }
 
+function refactorTable(){
+	//修改引入的css文件
+	changeCss();
+	//清除table内容
+	$('#templateTable').children().remove();
+	
+	//重新构造thead
+	$('#templateTable').append("<thead><tr><td>序号</td><td>缩略图</td><td>帧数</td>" +
+	"<td>气泡大小</td><td>上传时间</td><td>编辑</td><td>删除</td></tr></thead>");
+	//重新构造tbody
+	$('#templateTable').append("<tbody id='templateList'></tbody>");
+	
+	//清除分页
+	$('#page').attr("style","display: none");
+}	
+
 function generateShot(result){
-	//$('#yonkomaList').children().remove();
-	clearTable();
+	//clearTable();
+	refactorTable();
 	for(key in result){
-		var id= result[key].id;
-		var thumbnail = result[key].thumbnail;
-		var name = result[key].name;
-		var swf = result[key].swf;
-		var frame = result[key].frame;
-		var bubbleSize = result[key].bubbleSize;
-		var num = Math.ceil((parseInt(key)+1)/4);
+		//generateShotTd(id,name,thumbnail,swf,frame,bubbleSize,num,key);
+		generateTr(key);
 		
-		generateShotTd(id,name,thumbnail,swf,frame,bubbleSize,num,key);
+		generateTd(parseInt(key)+1,key);
+		
+		generateImgTd(result[key].thumbnail,result[key].swf,key);
+		
+		generateTd(result[key].frame,key);
+
+		generateTd(result[key].bubbleSize,key);
+		
+		generateTd(result[key].createTime,key);
+		
+		generateEditOperate(result[key].id,result[key].bubbleSize,result[key].frame,key);
+		
+		generateDelOperate(result[key].id,key);
 	}
 }
 
+function generateTr(key){
+	$('<tr></tr>').appendTo($('#templateList'))
+	.attr("id","line"+key);
+}
+
+//生成各td
+function generateTd(txt,key){
+	$('<td></td>').appendTo($('#line'+key))
+	.text(txt);
+}
+
+function generateEditOperate(id,bubbleSize,frame,key){
+	$('<td></td>').appendTo($('#line'+key))
+	.append($('<a></a>')
+		.append($('<img>').attr("src","imgs/edit.png"))
+		.attr("href","javascript:editShot('"+id+"','"+bubbleSize+"','"+frame+"');"));
+}
+
+function generateDelOperate(id,key){
+	$('<td></td>').appendTo($('#line'+key))
+	.append($('<a></a>')
+		.append($('<img>').attr("src","imgs/del.png"))
+		.attr("href","javascript:delShot('"+id+"');"));
+}
+
+function generateImgTd(thumbnail,swf,key){
+	var tr = document.getElementById("line"+key);
+	var para = document.createElement("td");
+	var a = document.createElement("a");
+	para.appendChild(a);
+	var img = document.createElement("img");
+	var local = '/zhui/zhuiapi?method=getAssetFile&relativePath=';
+	img.setAttribute("src",local+thumbnail);
+	img.setAttribute("height",30);
+	a.appendChild(img);
+	//getAssetFile
+	a.setAttribute("href",local+swf);
+	a.setAttribute("target", "_blank");
+	tr.appendChild(para);
+}
 
 function generateShotTd(id,name,thumbnail,swf,frame,bubbleSize,num,key){
 	var td = document.getElementById("ele"+num+key);
@@ -302,6 +379,11 @@ function editShot(id,bubbleSize,frame){
 	loadPopup();
 	$("#shot").val(id);
 	$("#bubbleSize").val(bubbleSize);
+	if(bubbleSize == "0"){
+		$("#bubbleSize").attr('disabled','disabled');
+	}else{
+		$("#bubbleSize").removeAttr('disabled');
+	}
 	$("#frame").val(frame);
 	$("#prompt").hide();
 	$("#bubbleInfo").hide();

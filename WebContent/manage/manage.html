@@ -3,8 +3,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>素材管理</title>
-<link rel="stylesheet" type="text/css" charset="utf-8" href="css/template.css" />
+<link id = "funsion"rel="stylesheet" type="text/css" charset="utf-8" href="css/template.css" />
 <link rel="stylesheet" type="text/css"  charset="utf-8" href="css/popup.css" />
+
 	
 <script type="text/javascript" src="js/jquery.js" charset="utf-8"></script>
 <script type="text/javascript" src="js/jquery.ui.widget.js"
@@ -26,7 +27,7 @@
 </div>
 	<input type="hidden" id="template">
 	
-	<table>
+	<table id="templateTable">
 		<tbody id="templateList">
 			<tr id="line1">
 				<td rowspan="3"  style="border:0px">	
@@ -57,12 +58,12 @@
 		<div>
 			<input type="hidden" id="parent">
 			<input type="hidden" id="shot">
-			<label>帧数</label>
-			<input type="text" id="frame" style="width:30px" onblur="checkNum();">
+			<label>所在帧数</label>
+			<input type="text" id="frame" style="width:60px" onblur="checkNum();">
 			<span  style="display: none;" id="frameInfo"></span><br>
 			
 			<label>气泡大小</label>
-			<input type="text" id="bubbleSize"  style="width:80px"  onblur="checkBubbleSize();">
+			<input type="text" id="bubbleSize"  style="width:60px"  onblur="checkBubbleSize();">
 			<span  style="display: none;" id="bubbleInfo"></span><br>
 			
 			<input type="button" id="submit" value="提交" onclick="updateShot();"><br>

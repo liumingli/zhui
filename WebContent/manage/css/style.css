@@ -91,3 +91,7 @@ input#selfCategory{
 input[type="text"] {
 	width:200px;
 }
+
+#banner{
+	padding-left:400px;
+}

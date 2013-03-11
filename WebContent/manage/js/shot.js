@@ -187,8 +187,10 @@ function checkTemplate(){
 		//alert("请先上传模板再传分镜头");
 		window.parent.frames['topFrame'].document.getElementById("templateUpload").style.color = "#ff9966";
 		window.parent.frames['topFrame'].document.getElementById("shotUpload").style.color = "#eee";
+		staticVal = "templateUpload";
 		window.parent.frames['mainFrame'].location.href = "templateUpload.html";
 	}else{
+		staticVal = "shotUpload";
 		$('#template').attr("value",templateId);
 		$("#caption").html("<b>分镜头上传</b> (模板名称："+templateName+")");
 	}

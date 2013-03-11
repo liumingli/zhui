@@ -145,14 +145,14 @@ function generateCaseTr(key){
 }
 
 //生成缩略图
-function generateCaseTd(thumbnial,swf,id,key){
+function generateCaseTd(thumbnail,swf,id,key){
 	var tr = document.getElementById("line"+key);
 	var para = document.createElement("td");
 	var a = document.createElement("a");
 	para.appendChild(a);
 	var img = document.createElement("img");
 	var local = '/zhui/zhuiapi?method=getAssetFile&relativePath=';
-	img.setAttribute("src",local+thumbnial);
+	img.setAttribute("src",local+thumbnail);
 	img.setAttribute("height",30);
 	a.appendChild(img);
 	//getAssetFile

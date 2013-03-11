@@ -15,8 +15,10 @@
 	/* display:none;    */
 	position:fixed;   
 	_position:absolute;   
-	height:auto;   
-	width:auto;   
+/* 	height:auto;    */
+/* 	width:auto;    */
+	height:150px;
+	width:210px;
 	background:#FFFFFF;   
 	border:0px solid #c0c0c0;   
 	z-index:2;   
