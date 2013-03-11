@@ -17,7 +17,7 @@ function uploadShot(){
 	window.location.href = encodeURI("shotUpload.html?id="+id+"&name="+name);
 }
 
-
+//修改引入的css文件
 function changeCss() {
 	 var o = document.getElementById('funsion');
 	 o.setAttribute('href', 'css/style.css');

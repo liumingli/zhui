@@ -379,10 +379,35 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		int rows = dbVisitor.deleteTemplate(templateId);
 		//删除分镜头
 		int dels = dbVisitor.deleteShotByTemplate(templateId);
+		
+		//FIXME 删除磁盘目录下的模板文件
+		deleteTemplateFile(templateId);
+		
 		if(rows ==1 &&  dels > 0){
 			flag = true;
 		}
 		return String.valueOf(flag);
+	}
+	
+	private void deleteTemplateFile(String templateId){
+		List<String> pathList = new ArrayList<String>();
+		//删除模板文件
+		Template template = dbVisitor.getTemplateById(templateId);
+		String tSwfPath =  imagePath +File.separator+template.getSwf();
+		String tImgPath =  imagePath +File.separator+ template.getThumbnail();
+		pathList.add(tSwfPath);
+		pathList.add(tImgPath);
+		 //删除分镜头
+		List<Shot> shotList = dbVisitor.getShotByTemplate(templateId);
+		for(int i=0;i<shotList.size();i++){
+			Shot sh = shotList.get(i);
+			String swfPath = sh.getSwf();
+			String imgPath = sh.getThumbnail();
+			pathList.add(swfPath);
+			pathList.add(imgPath);
+		}
+		
+		ZhuiUtils.deleteFileByPath(pathList);
 	}
 
 	@Override
@@ -417,10 +442,24 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	public String deleteShot(String shotId) {
 		boolean flag = false;
 		int rows = dbVisitor.deleteShot(shotId);
+		
+		//FIXME 删除磁盘目录下的分镜头文件
+		deleteShotFile(shotId);
+		
 		if(rows ==1){
 			flag = true;
 		}
 		return String.valueOf(flag);
+	}
+	
+	private void deleteShotFile(String shotId){
+		List<String> list = new ArrayList<String>();
+		Shot shot = dbVisitor.getShotById(shotId);
+		String swfPath = imagePath +File.separator+shot.getSwf();
+		String imgPath = imagePath +File.separator+shot.getThumbnail();
+		list.add(swfPath);
+		list.add(imgPath);
+		ZhuiUtils.deleteFileByPath(list);
 	}
 
 	@Override
@@ -604,10 +643,24 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	public String deleteCase(String caseId) {
 		boolean flag = false;
 		int res = dbVisitor.deleteCase(caseId);
+		//FIXME 删除磁盘目录下的案例原文件
+		deleteCaseFile(caseId);
+		
 		if(res > 0){
 			flag = true;
 		}
 		return String.valueOf(flag);
+	}
+
+	private void deleteCaseFile(String caseId){
+		List<String> list = new ArrayList<String>();
+		//完整磁盘路径
+		Case ca= dbVisitor.getCaseById(caseId);
+		String swfPath =  imagePath +File.separator+ca.getSwf();
+		String imgPath =  imagePath +File.separator+ca.getThumbnail();
+		list.add(swfPath);
+		list.add(imgPath);
+		ZhuiUtils.deleteFileByPath(list);
 	}
 	
 	@Override

@@ -57,6 +57,10 @@ public interface DBAccessInterface {
 
 	public int updateShot(String shotId, int frame, String bubbleSize);
 
+	public Case getCaseById(String caseId);
+
+	public Template getTemplateById(String templateId);
+
 
 
 }

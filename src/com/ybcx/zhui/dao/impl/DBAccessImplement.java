@@ -396,4 +396,34 @@ public class DBAccessImplement  implements DBAccessInterface{
 		return res;
 	}
 
+	@Override
+	public Case getCaseById(String caseId) {
+		String sql = "select * from t_case where c_id='"+caseId+"'";
+		Map<String, Object>map = jdbcTemplate.queryForMap(sql);
+		Case cas = new Case();
+		cas.setId(map.get("c_id").toString());
+		cas.setName(map.get("c_name").toString());
+		cas.setDescription(map.get("c_description").toString());
+		cas.setSwf(map.get("c_swf").toString());
+		cas.setThumbnail(map.get("c_thumbnail").toString());
+		cas.setDeliverTime(map.get("c_deliverTime").toString());
+		cas.setEnable(Integer.parseInt(map.get("c_enable").toString()));
+		return cas;
+	}
+
+	@Override
+	public Template getTemplateById(String templateId) {
+		String sql = "select * from t_template where t_id='"+templateId+"'";
+		Map<String, Object>map = jdbcTemplate.queryForMap(sql);
+		Template template = new Template();
+		template.setId(map.get("t_id").toString());
+		template.setName(map.get("t_name").toString());
+		template.setSwf(map.get("t_swf").toString());
+		template.setThumbnail(map.get("t_thumbnail").toString());
+		template.setType(map.get("t_type").toString());
+		template.setCreateTime(map.get("t_createTime").toString());
+		template.setEnable(Integer.parseInt(map.get("t_enable").toString()));
+		return template;
+	}
+
 }

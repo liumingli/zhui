@@ -3,6 +3,7 @@ package com.ybcx.zhui.utils;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class ZhuiUtils {
@@ -31,11 +32,14 @@ public class ZhuiUtils {
 	}
 	
 	//根据路径删除指定文件
-	public static boolean deleteFileByPath(String absolutePath){
+	public static boolean deleteFileByPath(List<String> absolutePathList){
 		boolean flag = false;
-		File file = new File(absolutePath);
-		if(file.exists()){
-			flag = file.delete();
+		for(int i=0;i<absolutePathList.size();i++){
+			String absolutePath = absolutePathList.get(i);
+			File file = new File(absolutePath);
+			if(file.exists()){
+				flag = file.delete();
+			}
 		}
 		return flag;
 	}
