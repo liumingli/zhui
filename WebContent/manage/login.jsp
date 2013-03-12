@@ -38,7 +38,7 @@ window.onload = function(){
 	    location.href="http://www.produ.cn";
 	}
 	
-    if (window != top) top.location.href = location.href;
+     if (window != top) top.location.href = location.href;
 };
 </script>
 

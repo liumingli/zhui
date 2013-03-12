@@ -2,6 +2,8 @@ package com.ybcx.zhui.facade;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +38,8 @@ public class AssistProcess {
 		if (action.equals(AppStarter.DIALOGUETOIMAGE)) {
 			String userId = req.getParameter("userId");
 			String dialogue = req.getParameter("dialogue");
+			dialogue=URLEncoder.encode(dialogue,"ISO-8859-1");   
+			dialogue=URLDecoder.decode(dialogue, "UTF-8");  
 			String width = req.getParameter("width");
 			String height = req.getParameter("height");
 			apiAdaptor.dialogueToImage(userId,dialogue,width,height,res);

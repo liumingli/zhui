@@ -254,7 +254,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 			fp.mkdir();
 		} 
 		String filePath = createDialogueImage(previewPath,dialogue,Integer.parseInt(width),Integer.parseInt(height));
-		log.info("The new image path is "+filePath);
+		//log.info("The new image path is "+filePath);
 		File file = new File(filePath);
 		if (file.exists()) {
 			try {
@@ -286,9 +286,11 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		/** 设置生成图片的文字样式 * */
 		String fontName =  systemConfigurer.getProperty("fontName").toString();
 		int fontSize = Integer.parseInt( systemConfigurer.getProperty("fontSize").toString());
-		Font font = new Font(fontName, Font.PLAIN, fontSize);
+		Font font = new Font(fontName, Font.BOLD, fontSize);
 		g2.setFont(font);
-		g2.setPaint(Color.blue);
+		//转换十六进制色值为十进制
+		// Color color = new Color(3,3,3);
+		g2.setPaint(Color.black);
 		
 		/**文字拆分换行*/
 		//一行最长宽度
@@ -331,7 +333,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		/** 防止生成的文字带有锯齿 * */
 		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
+		
 		/** 在图片上生成文字 * */
 		for(int j=0; j<strList.size(); j++) {
 			g2.drawString(strList.get(j), 4, (j+1)*strHeight);
