@@ -145,8 +145,16 @@ public class ApiAdaptor {
 		String result = zhuiService.updateShot(shotId,frame,bubbleSize);
 		return result;
 	}
-
 	
+	public String deleteMemory(String memoryId) {
+		String result = zhuiService.deleteMemory(memoryId);
+		return result;
+	}
+	
+	public String getMemory(String pageNum, String pageSize) {
+		List<Memory> list = zhuiService.getMemory(pageNum,pageSize);
+		return JSONArray.fromCollection(list).toString();
+	}
 	
 
 } // end of class

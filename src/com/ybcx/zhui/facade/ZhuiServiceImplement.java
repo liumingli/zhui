@@ -212,11 +212,13 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	public void getResource(String resId, String type, HttpServletResponse res) {
 		//先根据资源类型查询出图片路径
 		String filePath = "";
-		if(("template").equals(type)){
+		if(("templateSwf").equals(type)){
 			filePath = dbVisitor.getTemplateFilePath(resId);
-		}else if(("shot").equals(type)){
+		}else if(("templateImage").equals(type)){
+			filePath = dbVisitor.getTemplateImagePath(resId);
+		}else if(("shot").equals(type)){//只取swf
 			filePath = dbVisitor.getShotFilePath(resId);
-		}else if(("dialogue").equals(type)){
+		}else if(("dialogue").equals(type)){//只取image
 			filePath = dbVisitor.getDialogueFilePath(resId);
 		}else{
 			filePath= "default.png";
@@ -498,6 +500,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		 JSONObject jo = JSONObject.fromObject(content);
 		 Iterator<String> iter = jo.keys();
          while(iter.hasNext()) {  
+        	 //分镜头id---shotId
             String shotId = iter.next().toString();  
             Shot shot = dbVisitor.getShotById(shotId);
             //再根据shotId取出size和frame等信息
@@ -508,10 +511,16 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
         		width = Integer.parseInt(arr[0]);
         		height = Integer.parseInt(arr[1]);
             	
+        		//该分镜头对应的对白内容
             	String dialogue = jo.get(shot.getId()).toString();
             	
             	//生成文字图片，并存相对路径
-            	String imgPath = this.createDialogueImage(imagePath, dialogue, width, height);
+            	String dialogueImgPath = imagePath+File.separator+"template"+File.separator+"dialogue";
+            	File fp = new File(dialogueImgPath);
+            	if(!fp.exists()){
+            		fp.mkdir();
+            	}
+            	String imgPath = this.createDialogueImage(dialogueImgPath, dialogue, width, height);
     			String relativePath =  ZhuiUtils.processFilepath(imgPath);
             	
             	int frame = shot.getFrame();
@@ -700,5 +709,48 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		return String.valueOf(flag);
 	}
 
+	@Override
+	public String deleteMemory(String memoryId) {
+		boolean flag = false;
+		int rows = dbVisitor.deleteMemory(memoryId);
+		
+		//删除磁盘目录下的对白图片文件
+		deleteDialogueByMemory(memoryId);
+		
+		if(rows ==1){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
+	private void deleteDialogueByMemory(String memoryId) {
+		Memory memory = dbVisitor.getMemoryById(memoryId);
+		String dialogueIds = memory.getDialogues();
+		String[] arr = dialogueIds.split(",");
+		for(int i=0;i<arr.length;i++){
+			String dialogueId = arr[i];
+			//删除磁盘文件
+			String imgPath = dbVisitor.getDialogueFilePath(dialogueId);
+			File file = new File(imagePath+File.separator+imgPath);
+			if(file.exists()){
+				boolean  res =file.delete();
+				if(res){
+					log.info("delete dialogue image success");	
+				}
+			}
+			//删除数据库记录
+			int rows = dbVisitor.deleteDialogue(dialogueId);
+			if(rows > 0){
+				log.info("delete dialogue db record success");
+			}
+		}
+		
+	}
+
+	@Override
+	public List<Memory> getMemory(String pageNum, String pageSize) {
+		List<Memory> list = dbVisitor.getMemory(Integer.parseInt(pageNum),Integer.parseInt(pageSize));
+		return list;
+	}
 
 }

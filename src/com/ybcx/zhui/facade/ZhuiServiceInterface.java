@@ -64,5 +64,8 @@ public interface ZhuiServiceInterface {
 
 	public String updateShot(String shotId, String frame, String bubbleSize);
 
+	public String deleteMemory(String memoryId);
+
+	public List<Memory> getMemory(String pageNum, String pageSize);
 
 }

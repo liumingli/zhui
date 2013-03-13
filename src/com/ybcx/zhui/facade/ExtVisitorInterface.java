@@ -21,7 +21,6 @@ public interface ExtVisitorInterface {
 	//获取素材缩略图
 	public static final String GETTHUMBNAIL ="getThumbnail";
 	
-	
 	//动画模板上传保存
 	public static final String SAVETEMPLATE = "saveTemplate";
     
@@ -37,6 +36,9 @@ public interface ExtVisitorInterface {
 	//根据分类取模板
 	public static final String GETTEMPLATEBYCATEGORY = "getTemplateByCategory";
 	
+	//根据id取模板
+	public static final String GETTEMPLATEBYID = "getTemplateById";
+	
 	//根据模板取分镜头
 	public static final String GETSHOTBYTEMPLATE = "getShotByTemplate";
 	
@@ -51,6 +53,12 @@ public interface ExtVisitorInterface {
 	
 	//根据用户取成品
 	public static final String GETMEMORYBYUSER = "getMemoryByUser";
+	
+	//删除某个成品动画
+	public static final String DELETEMEMORY = "deleteMemory";
+	
+	//根据分页取成品
+	public static final String GETMEMORY = "getMemory";
 	
 	//添加精彩案例
 	public static final String SAVECASE = "saveCase";

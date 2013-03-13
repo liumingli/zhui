@@ -251,6 +251,15 @@ public class DBAccessImplement  implements DBAccessInterface{
 		swfPath = map.get("t_swf").toString();
 		return swfPath;
 	}
+	
+	@Override
+	public String getTemplateImagePath(String resId) {
+		String imgPath = "";
+		String sql = "select t_thumbnail from t_template where t_id='"+resId+"'";
+		Map<String,Object> map = jdbcTemplate.queryForMap(sql);
+		imgPath = map.get("t_thumbnail").toString();
+		return imgPath;
+	}
 
 	@Override
 	public String getShotFilePath(String resId) {
@@ -424,6 +433,59 @@ public class DBAccessImplement  implements DBAccessInterface{
 		template.setCreateTime(map.get("t_createTime").toString());
 		template.setEnable(Integer.parseInt(map.get("t_enable").toString()));
 		return template;
+	}
+
+	@Override
+	public int deleteMemory(String memoryId) {
+		String sql = "update t_memory set m_enable =0 where m_id='"+memoryId+"'";
+		int rows = jdbcTemplate.update(sql);
+		return rows;
+	}
+
+	@Override
+	public Memory getMemoryById(String memoryId) {
+		String sql = "select * from t_memory where m_id='"+memoryId+"'";
+		Map<String,Object> map = jdbcTemplate.queryForMap(sql);
+		Memory memory = new Memory();
+		memory.setId(map.get("m_id").toString());
+		memory.setUser(map.get("m_user").toString());
+		memory.setTemplate(map.get("m_template").toString());
+		memory.setDialogues(map.get("m_dialogues").toString());
+		memory.setFrames(map.get("m_frames").toString());
+		memory.setCreateTime(map.get("m_createTime").toString());
+		memory.setEnable(Integer.parseInt(map.get("m_enable").toString()));
+		return memory;
+	}
+
+	@Override
+	public int deleteDialogue(String dialogueId) {
+		String sql = "delete from t_dialogue where d_id = '"+dialogueId+"'";
+		int rows = jdbcTemplate.update(sql);
+		return rows;
+	}
+
+	@Override
+	public List<Memory> getMemory(int pageNum, int pageSize) {
+		List<Memory> resList = new ArrayList<Memory>();
+		int startLine = (pageNum -1)*pageSize;
+		String sql = "select * from t_memory where m_enable=1 " +
+				"order by m_createTime desc limit "+startLine+","+pageSize;
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			for (int i = 0; i < rows.size(); i++) {
+				Map<String, Object> map = (Map<String, Object>) rows.get(i);
+				Memory memory = new Memory();
+				memory.setId(map.get("m_id").toString());
+				memory.setUser(map.get("m_user").toString());
+				memory.setTemplate(map.get("m_template").toString());
+				memory.setDialogues(map.get("m_dialogues").toString());
+				memory.setFrames(map.get("m_frames").toString());
+				memory.setCreateTime(map.get("m_createTime").toString());
+				memory.setEnable(Integer.parseInt(map.get("m_enable").toString()));
+				resList.add(memory);
+			}
+		}
+		return resList;
 	}
 
 }

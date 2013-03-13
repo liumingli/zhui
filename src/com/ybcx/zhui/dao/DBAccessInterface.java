@@ -36,6 +36,8 @@ public interface DBAccessInterface {
 
 	public String getTemplateFilePath(String resId);
 
+	public String getTemplateImagePath(String resId);
+
 	public String getShotFilePath(String resId);
 
 	public String getDialogueFilePath(String resId);
@@ -61,6 +63,12 @@ public interface DBAccessInterface {
 
 	public Template getTemplateById(String templateId);
 
+	public int deleteMemory(String memoryId);
 
+	public Memory getMemoryById(String memoryId);
+
+	public int deleteDialogue(String dialogueId);
+
+	public List<Memory> getMemory(int pageNum, int pageSize);
 
 }

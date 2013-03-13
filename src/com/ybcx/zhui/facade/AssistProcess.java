@@ -206,6 +206,24 @@ public class AssistProcess {
 			pw.print(result);
 			pw.close();
 			
+		}else if(action.equals(AppStarter.DELETEMEMORY)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String memoryId = req.getParameter("memoryId");
+			String result = apiAdaptor.deleteMemory(memoryId);
+			pw.print(result);
+			pw.close();
+			
+			
+		}else if(action.equals(AppStarter.GETMEMORY)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String pageNum = req.getParameter("pageNum");
+			String pageSize = req.getParameter("pageSize");
+			String result = apiAdaptor.getMemory(pageNum,pageSize);
+			pw.print(result);
+			pw.close();
+			
 		}else{
 			
 		}
