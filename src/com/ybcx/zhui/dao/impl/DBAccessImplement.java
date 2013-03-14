@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import com.ybcx.zhui.beans.Case;
 import com.ybcx.zhui.beans.Dialogue;
 import com.ybcx.zhui.beans.Memory;
+import com.ybcx.zhui.beans.Order;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
 import com.ybcx.zhui.dao.DBAccessInterface;
@@ -483,6 +484,90 @@ public class DBAccessImplement  implements DBAccessInterface{
 				memory.setCreateTime(map.get("m_createTime").toString());
 				memory.setEnable(Integer.parseInt(map.get("m_enable").toString()));
 				resList.add(memory);
+			}
+		}
+		return resList;
+	}
+	
+
+	@Override
+	public int addOrder(final Order order) {
+		String sql = "INSERT INTO t_order "
+				+ "(o_id,o_person,o_category,o_template,o_style,o_tips,o_mins,o_music,o_entity,o_state," +
+				"o_owner,o_email,o_phone,o_address,o_createTime,o_enable,o_memo) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		
+		int res =jdbcTemplate.update(sql, new PreparedStatementSetter() {
+			public void setValues(PreparedStatement ps) {
+				try {
+					ps.setString(1, order.getId());
+					ps.setString(2, order.getPerson());
+					ps.setString(3, order.getCategory());
+					ps.setString(4, order.getTemplate());
+					ps.setString(5, order.getStyle());
+					ps.setString(6, order.getTips());
+					ps.setInt(7,order.getMins());
+					ps.setInt(8, order.getMusic());
+					ps.setInt(9, order.getEntity());
+					ps.setInt(10, order.getState());
+					ps.setString(11, order.getOwner());
+					ps.setString(12, order.getEmail());
+					ps.setString(13, order.getPhone());
+					ps.setString(14, order.getAddress());
+					ps.setString(15, order.getCreateTime());
+					ps.setInt(16, order.getEnable());
+					ps.setString(17, "");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		return res;
+	}
+
+	@Override
+	public int updateOrderState(String orderId, int state) {
+		String sql = "update t_order set o_state="+state+" where o_id='"+orderId+"'";
+		int rows = jdbcTemplate.update(sql);
+		return rows;
+	}
+
+	@Override
+	public int deleteOrder(String orderId) {
+		String sql = "update t_order set o_enable=0 where o_id='"+orderId+"'";
+		int rows = jdbcTemplate.update(sql);
+		return rows;
+	}
+
+	@Override
+	public List<Order> getOrder(int pageNum, int pageSize) {
+		List<Order> resList = new ArrayList<Order>();
+		int startLine = (pageNum -1)*pageSize;
+		String sql = "select * from t_order where o_enable=1 " +
+				"order by o_createTime desc limit "+startLine+","+pageSize;
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			for (int i = 0; i < rows.size(); i++) {
+				Map<String, Object> map = (Map<String, Object>) rows.get(i);
+				Order order = new Order();
+				order.setId(map.get("o_id").toString());
+				order.setPerson(map.get("o_person").toString());
+				order.setCategory(map.get("o_category").toString());
+				order.setTemplate(map.get("o_template").toString());
+				order.setStyle(map.get("o_style").toString());
+				order.setMusic(Integer.parseInt(map.get("o_music").toString()));
+				order.setMins(Integer.parseInt(map.get("o_mins").toString()));
+				order.setTips(map.get("o_tips").toString());
+				order.setEntity(Integer.parseInt(map.get("o_entity").toString()));
+				order.setState(Integer.parseInt(map.get("o_state").toString()));
+				order.setOwner(map.get("o_owner").toString());
+				order.setPhone(map.get("o_phone").toString());
+				order.setEmail(map.get("o_email").toString());
+				order.setAddress(map.get("o_address").toString());
+				order.setCreateTime(map.get("o_createTime").toString());
+				order.setEnable(Integer.parseInt(map.get("o_enable").toString()));
+				resList.add(order);
 			}
 		}
 		return resList;

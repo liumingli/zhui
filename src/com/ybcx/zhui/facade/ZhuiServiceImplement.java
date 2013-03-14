@@ -34,6 +34,7 @@ import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import com.ybcx.zhui.beans.Case;
 import com.ybcx.zhui.beans.Dialogue;
 import com.ybcx.zhui.beans.Memory;
+import com.ybcx.zhui.beans.Order;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
 import com.ybcx.zhui.dao.DBAccessInterface;
@@ -750,6 +751,69 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	@Override
 	public List<Memory> getMemory(String pageNum, String pageSize) {
 		List<Memory> list = dbVisitor.getMemory(Integer.parseInt(pageNum),Integer.parseInt(pageSize));
+		return list;
+	}
+
+	@Override
+	public String addOrder(String person, String category, String template,
+			String style, String music, String mins, String tips,
+			String entity, String name, String phone, String email,
+			String address) {
+		boolean flag = false;
+		Order order = this.generateOrder(person,category,template,style,music,mins,tips,entity,name,phone,email,address);
+		int rows = dbVisitor.addOrder(order);
+		if(rows > 0){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
+	private Order generateOrder(String person, String category,
+			String template, String style, String music, String mins,String tips, 
+			String entity, String name, String phone,String email, String address) {
+		Order order = new Order();
+		order.setId(ZhuiUtils.generateUID());
+		order.setPerson(person);
+		order.setCategory(category);
+		order.setTemplate(template);
+		order.setStyle(style);
+		order.setMins(Integer.parseInt(mins));
+		order.setMusic(Integer.parseInt(music));
+		order.setEntity(Integer.parseInt(entity));
+		order.setState(-1);
+		order.setTips(tips);
+		order.setOwner(name);
+		order.setEmail(email);
+		order.setPhone(phone);
+		order.setAddress(address);
+		order.setCreateTime(ZhuiUtils.getFormatNowTime());
+		order.setEnable(1);
+		return order;
+	}
+
+	@Override
+	public String updateOrderState(String orderId, String state) {
+		boolean flag = false;
+		int res = dbVisitor.updateOrderState(orderId,Integer.parseInt(state));
+		if(res > 0){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
+	@Override
+	public String deleteOrder(String orderId) {
+		boolean flag = false;
+		int res = dbVisitor.deleteOrder(orderId);
+		if(res > 0){
+			flag = true;
+		}
+		return String.valueOf(flag);
+	}
+
+	@Override
+	public List<Order> getOrder(String pageNum, String pageSize) {
+		List<Order> list = dbVisitor.getOrder(Integer.parseInt(pageNum),Integer.parseInt(pageSize));
 		return list;
 	}
 

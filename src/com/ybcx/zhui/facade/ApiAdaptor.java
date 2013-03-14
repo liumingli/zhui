@@ -12,6 +12,7 @@ import net.sf.json.JSONObject;
 
 import com.ybcx.zhui.beans.Case;
 import com.ybcx.zhui.beans.Memory;
+import com.ybcx.zhui.beans.Order;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
 
@@ -153,6 +154,27 @@ public class ApiAdaptor {
 	
 	public String getMemory(String pageNum, String pageSize) {
 		List<Memory> list = zhuiService.getMemory(pageNum,pageSize);
+		return JSONArray.fromCollection(list).toString();
+	}
+	
+	public String addOrder(String person, String category, String template,
+			String style, String music, String mins, String tips, String entity, 
+			String name, String phone, String email, String address) {
+		String result = zhuiService.addOrder(person,category,template,style,music,mins,tips,entity,name,phone,email,address);
+		return result;
+	}
+	
+	public String updateOrderState(String orderId, String state) {
+		String result = zhuiService.updateOrderState(orderId,state);
+		return result;
+	}
+	
+	public String deleteOrder(String orderId) {
+		String result = zhuiService.deleteOrder(orderId);
+		return result;
+	}
+	public String getOrder(String pageNum, String pageSize) {
+		List<Order> list = zhuiService.getOrder(pageNum,pageSize);
 		return JSONArray.fromCollection(list).toString();
 	}
 	

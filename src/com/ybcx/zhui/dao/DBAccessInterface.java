@@ -5,6 +5,7 @@ import java.util.List;
 import com.ybcx.zhui.beans.Case;
 import com.ybcx.zhui.beans.Dialogue;
 import com.ybcx.zhui.beans.Memory;
+import com.ybcx.zhui.beans.Order;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
 
@@ -70,5 +71,14 @@ public interface DBAccessInterface {
 	public int deleteDialogue(String dialogueId);
 
 	public List<Memory> getMemory(int pageNum, int pageSize);
+	
+	public int addOrder(Order order);
+
+	public int updateOrderState(String orderId, int state);
+
+	public int deleteOrder(String orderId);
+
+	public List<Order> getOrder(int pageNum, int pageSize);
+
 
 }

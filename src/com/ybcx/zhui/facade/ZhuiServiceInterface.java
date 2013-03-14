@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ybcx.zhui.beans.Case;
 import com.ybcx.zhui.beans.Memory;
+import com.ybcx.zhui.beans.Order;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
 
@@ -67,5 +68,16 @@ public interface ZhuiServiceInterface {
 	public String deleteMemory(String memoryId);
 
 	public List<Memory> getMemory(String pageNum, String pageSize);
+
+	public String addOrder(String person, String category, String template,
+			String style, String music, String mins, String tips,
+			String entity, String name, String phone, String email,
+			String address);
+
+	public String updateOrderState(String orderId, String state);
+
+	public String deleteOrder(String orderId);
+
+	public List<Order> getOrder(String pageNum, String pageSize);
 
 }

@@ -18,8 +18,11 @@ public class Order {
 	private int state;
 	private String owner;
 	private String email;
+	private String phone;
 	private String address;
+	private String createTime;
 	private int enable;
+	
 	public String getId() {
 		return id;
 	}
@@ -89,6 +92,12 @@ public class Order {
 	public String getEmail() {
 		return email;
 	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -100,6 +109,12 @@ public class Order {
 	}
 	public int getEnable() {
 		return enable;
+	}
+	public String getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
 	}
 	public void setEnable(int enable) {
 		this.enable = enable;

@@ -224,6 +224,61 @@ public class AssistProcess {
 			pw.print(result);
 			pw.close();
 			
+		}else if(action.equals(AppStarter.GETMEMORY)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String pageNum = req.getParameter("pageNum");
+			String pageSize = req.getParameter("pageSize");
+			String result = apiAdaptor.getMemory(pageNum,pageSize);
+			pw.print(result);
+			pw.close();
+			
+		//FIXME 定制相关api待联调测试	
+		}else if(action.equals(AppStarter.ADDORDER)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String person = req.getParameter("person");
+			String category = req.getParameter("category");
+			String template = req.getParameter("template");
+			String style = req.getParameter("style");
+			String music = req.getParameter("music");
+			String mins = req.getParameter("mins");
+			String tips = req.getParameter("tips");
+			String entity = req.getParameter("entity");
+			String name = req.getParameter("name");
+			String phone = req.getParameter("phone");
+			String email = req.getParameter("email");
+			String address = req.getParameter("address");
+			String result = apiAdaptor.addOrder(person,category,template,style,music,mins,tips,entity,name,phone,email,address);
+			pw.print(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.UPDATEORDERSTATE)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String orderId = req.getParameter("orderId");
+			String state = req.getParameter("state");
+			String result = apiAdaptor.updateOrderState(orderId,state);
+			pw.print(result);
+			pw.close();
+			
+		}else if(action.equals(AppStarter.DELETEORDER)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String orderId = req.getParameter("orderId");
+			String result = apiAdaptor.deleteOrder(orderId);
+			pw.print(result);
+			pw.close();	
+			
+		}else if(action.equals(AppStarter.GETORDER)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String pageNum = req.getParameter("pageNum");
+			String pageSize = req.getParameter("pageSize");
+			String result = apiAdaptor.getOrder(pageNum,pageSize);
+			pw.print(result);
+			pw.close();
+			
 		}else{
 			
 		}

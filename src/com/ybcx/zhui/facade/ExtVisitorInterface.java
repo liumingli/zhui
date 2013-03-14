@@ -80,4 +80,20 @@ public interface ExtVisitorInterface {
 	
 	//更新分镜头
 	public static final String UPDATESHOT = "updateShot";
+	
+	
+	
+	//---------------订制API------------------------------------------------------
+	
+	//添加订单
+	public static final String ADDORDER = "addOrder";
+	
+	//修改订单状态
+	public static final String UPDATEORDERSTATE = "updateOrderState";
+	
+	//删除一个订单
+	public static final String DELETEORDER = "deleteOrder";
+	
+	//分页取订单
+	public static final String GETORDER = "getOrder";
 }
