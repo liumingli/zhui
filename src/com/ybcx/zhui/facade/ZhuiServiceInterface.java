@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+
 import com.ybcx.zhui.beans.Case;
 import com.ybcx.zhui.beans.Memory;
 import com.ybcx.zhui.beans.Order;
@@ -79,5 +81,7 @@ public interface ZhuiServiceInterface {
 	public String deleteOrder(String orderId);
 
 	public List<Order> getOrder(String pageNum, String pageSize);
+
+	public String saveVideoImage(FileItem imgData, String memoryId, String status);
 
 }

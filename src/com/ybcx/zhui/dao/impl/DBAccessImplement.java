@@ -203,8 +203,8 @@ public class DBAccessImplement  implements DBAccessInterface{
 	@Override
 	public int saveMemory(final Memory memory) {
 		String sql = "INSERT INTO t_memory "
-				+ "(m_id, m_user, m_template, m_dialogues,m_frames,m_createTime,m_enable,m_memo) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "(m_id, m_user, m_template, m_dialogues,m_frames,m_createTime,m_video,m_enable,m_memo) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		
 		int res =jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			public void setValues(PreparedStatement ps) {
@@ -215,8 +215,9 @@ public class DBAccessImplement  implements DBAccessInterface{
 					ps.setString(4, memory.getDialogues());
 					ps.setString(5, memory.getFrames());
 					ps.setString(6, memory.getCreateTime());
-					ps.setInt(7, memory.getEnable());
-					ps.setString(8, "");
+					ps.setInt(7, memory.getVideo());
+					ps.setInt(8, memory.getEnable());
+					ps.setString(9, "");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -239,6 +240,7 @@ public class DBAccessImplement  implements DBAccessInterface{
 			memory.setDialogues(map.get("m_dialogues").toString());
 			memory.setFrames(map.get("m_frames").toString());
 			memory.setCreateTime(map.get("m_createTime").toString());
+			memory.setVideo(Integer.parseInt(map.get("m_video").toString()));
 			memory.setEnable(Integer.parseInt(map.get("m_enable").toString()));
 		}
 		return memory;
@@ -297,6 +299,7 @@ public class DBAccessImplement  implements DBAccessInterface{
 				memory.setDialogues(map.get("m_dialogues").toString());
 				memory.setFrames(map.get("m_frames").toString());
 				memory.setCreateTime(map.get("m_createTime").toString());
+				memory.setVideo(Integer.parseInt(map.get("m_video").toString()));
 				memory.setEnable(Integer.parseInt(map.get("m_enable").toString()));
 				resList.add(memory);
 			}

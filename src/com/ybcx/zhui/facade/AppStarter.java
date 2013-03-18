@@ -170,13 +170,13 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 			}else{
 				
 		    	String method = getMethod(fileItems);
-//			    if(method.equals(AppStarter.SAVEANIM)){
-//					String result = apiAdaptor.createAnimation(fileItems);
-//					pw.write(result);
-//					
-//				 }else{
-//					
-//				 }
+			    if(method.equals(AppStarter.UPLOADFRAME)){
+					String result = apiAdaptor.uploadFrame(fileItems);
+					pw.write(result);
+					
+				 }else{
+					
+				 }
 			}
 			
 		} catch (SizeLimitExceededException e) {

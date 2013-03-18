@@ -12,6 +12,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
 
 import com.sun.image.codec.jpeg.ImageFormatException;
@@ -39,6 +42,7 @@ import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
 import com.ybcx.zhui.dao.DBAccessInterface;
 import com.ybcx.zhui.tools.DeleteFile;
+import com.ybcx.zhui.tools.FfmpegProcess;
 import com.ybcx.zhui.utils.ZhuiUtils;
 
 public class ZhuiServiceImplement implements ZhuiServiceInterface {
@@ -66,7 +70,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		this.systemConfigurer = systemConfigurer;
 	}
 	
-	// 设定输出的类型
+	// 设定输出的类型 MIME TYPE
 	private static final String GIF = "image/gif;charset=UTF-8";
 
 	private static final String JPG = "image/jpeg;charset=UTF-8";
@@ -75,7 +79,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	
 	private static final String SWF = "application/x-shockwave-flash;charset=UTF-8";
 		
-	
+	private static final String FLV = "flv-application/octet-stream;charset=UTF-8";
 
 	@Override
 	public void getThumbnailFile(String relativePath, HttpServletResponse res) {
@@ -191,6 +195,8 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 					writePNGImage(imageIn, res, file);
 				} else if (type.toLowerCase().equals("gif")) {
 					writeGIFImage(imageIn, res, file);
+				} else if (type.toLowerCase().equals("flv")) {
+					writeFlvVideo(imageIn, res, file);
 				} else {
 					writePNGImage(defaultIn, res, file);
 				}
@@ -203,6 +209,13 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		
 	}
 	
+	private void writeFlvVideo(InputStream imageIn, HttpServletResponse res,
+			File file) {
+		res.setContentType(FLV);
+		res.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\""); 
+		getOutInfo(imageIn, res);
+	}
+
 	private void writeSWF(InputStream imageIn, HttpServletResponse res, File file) {
 //		res.addHeader("content-length",String.valueOf(file.length()));
 		res.setContentType(SWF);
@@ -250,7 +263,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	public void dialogueToImage(String userId,String dialogue, String width, String height,HttpServletResponse res) {
 		//将文字生成png图片并返回
 		res.setContentType(PNG);
-		//FIXME 创建预览临时保存路径
+		//创建预览临时保存路径
 		String previewPath = imagePath +File.separator +"template"+File.separator+userId;
 		File fp = new File(previewPath);
 		if (!fp.exists()){
@@ -385,7 +398,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		//删除分镜头
 		int dels = dbVisitor.deleteShotByTemplate(templateId);
 		
-		//FIXME 删除磁盘目录下的模板文件
+		//删除磁盘目录下的模板文件
 		deleteTemplateFile(templateId);
 		
 		if(rows ==1 &&  dels > 0){
@@ -448,7 +461,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		boolean flag = false;
 		int rows = dbVisitor.deleteShot(shotId);
 		
-		//FIXME 删除磁盘目录下的分镜头文件
+		//删除磁盘目录下的分镜头文件
 		deleteShotFile(shotId);
 		
 		if(rows ==1){
@@ -586,6 +599,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		memory.setFrames(frames);
 		memory.setCreateTime(ZhuiUtils.getFormatNowTime());
 		memory.setEnable(1);
+		memory.setVideo(0);
 		return memory;
 	}
 
@@ -655,7 +669,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	public String deleteCase(String caseId) {
 		boolean flag = false;
 		int res = dbVisitor.deleteCase(caseId);
-		//FIXME 删除磁盘目录下的案例原文件
+		//删除磁盘目录下的案例原文件
 		deleteCaseFile(caseId);
 		
 		if(res > 0){
@@ -815,6 +829,60 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	public List<Order> getOrder(String pageNum, String pageSize) {
 		List<Order> list = dbVisitor.getOrder(Integer.parseInt(pageNum),Integer.parseInt(pageSize));
 		return list;
+	}
+
+	@Override
+	public String saveVideoImage(FileItem imgData, String memoryId, String status) {
+
+			//先初始化存储位置
+			String imgFolder = imagePath+File.separator+"template"+File.separator+"video"+File.separator+memoryId;
+			File fp = new File(imgFolder);
+			if(!fp.exists()){
+				fp.mkdir();
+			}
+			String fileName = imgData.getName();
+			String path = imgFolder +File.separator+fileName;
+			try {
+				BufferedInputStream in = new BufferedInputStream(imgData.getInputStream());
+				// 获得文件输入流
+				BufferedOutputStream outStream = new BufferedOutputStream(new FileOutputStream(new File(path)));// 获得文件输出流
+				Streams.copy(in, outStream, true);// 开始把文件写到你指定的上传文件夹
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			
+			if("complete".equals(status)){
+				String videoAddress = this.convertImageToVideo(imgFolder,memoryId);
+				return videoAddress;
+			}else{
+				//上传成功，则插入数据库
+				if (new File(path).exists()) {
+					return ZhuiUtils.processFilepath(path);
+				}else{
+					return "false";
+				}
+			}
+	}
+	
+	//根据图片生成video
+	private String convertImageToVideo(String imgFolder,String memeoryId){
+		String ffmpegPath =systemConfigurer.getProperty("ffmpegPath");
+		//最后一张则去调用生成视频，并返回拼好的地址
+		String videoPath = imagePath+File.separator+"template"+File.separator+"video"+ File.separator+memeoryId+".flv";
+		
+		FfmpegProcess.imageToVideo(ffmpegPath, imgFolder, videoPath);
+		
+		if(new File(videoPath).exists()){
+			//删除图片文件夹
+			DeleteFile delFile = new DeleteFile();
+			delFile.delFolder(imgFolder);
+			
+			return ZhuiUtils.processFilepath(videoPath);
+		}else{
+			return "false";
+		}
+		
 	}
 
 }

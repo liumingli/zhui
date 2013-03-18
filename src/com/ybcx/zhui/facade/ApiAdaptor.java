@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -176,6 +178,36 @@ public class ApiAdaptor {
 	public String getOrder(String pageNum, String pageSize) {
 		List<Order> list = zhuiService.getOrder(pageNum,pageSize);
 		return JSONArray.fromCollection(list).toString();
+	}
+	
+	public String uploadFrame(List<FileItem> fileItems) {
+		FileItem imgData = null;
+		String memoryId = "";
+		String status = "";
+		
+		for (int i = 0; i < fileItems.size(); i++) {
+			FileItem item = fileItems.get(i);
+			if (!item.isFormField()) {
+				//图片数据
+				imgData = item;
+			}
+			
+			if (item.isFormField()) {
+				
+				if (item.getFieldName().equals("memoryId")) {
+					memoryId = item.getString();
+				}
+				
+				if (item.getFieldName().equals("status")) {
+					status = item.getString();
+				}
+				
+			}
+		}//取参数完成
+	
+		String result = zhuiService.saveVideoImage(imgData,memoryId,status);
+		
+		return result;
 	}
 	
 

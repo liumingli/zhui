@@ -12,6 +12,7 @@ public class Memory {
 	private String dialogues;
 	private String frames;
 	private String createTime;
+	private int video;
 	private int enable;
 	
 	public String getId() {
@@ -49,6 +50,12 @@ public class Memory {
 	}
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
+	}
+	public int getVideo() {
+		return video;
+	}
+	public void setVideo(int video) {
+		this.video = video;
 	}
 	public int getEnable() {
 		return enable;

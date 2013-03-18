@@ -66,18 +66,16 @@
 	<div id="content">
 		<form name="uploadForm" id="uploadForm"
 			onsubmit="return checkBlank();" onreset="clearMsg();"
-			action="zhuiapi" method="get" >
+			action="zhuiapi" method="post"  enctype="multipart/form-data">
 			<ul>
-				<li><input type="hidden" name="method" value="dialogueToImage" />
+				<li><input type="hidden" name="method" value="uploadFrame" />
 				</li>
-
-				<li>内容 <input type="text" name="dialogue" value="麦丽素救活了多少古装剧里那些死去的人们。。。"></li>
-				<li>字号<input type="text" name="fontSize"  value="22"></li>
-				<li>是否粗体 <input type="text" name="isBold" value = "1"></li>
-				<li>宽 <input type="text" name="width" value = "200"></li>
-				<li>高 <input type="text" name="height" value = "300"></li>
+		<li>memoryId <input type="text" name="memoryId" value="1964124547"></li>
+			<li>status <input type="text" name="status" value="uploading"></li>
+				<li>上传文件<input type="file" name="file1" id="file1" size="30"
+					onchange="CheckFileType();" />
+				</li>
 				<li><div id="msg"></div>
-				</li>
 				<li><input type="submit" name="submit" value="测试"> <input
 					type="reset" name="reset" value="重置"><br />
 				</li>

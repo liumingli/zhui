@@ -15,7 +15,7 @@ public interface ExtVisitorInterface {
 	//根据文字生成图片
 	public static final String DIALOGUETOIMAGE = "dialogueToImage";
 	
-	//获取素材
+	//获取素材，包括flv
 	public static final String GETASSETFILE ="getAssetFile";
 	
 	//获取素材缩略图
@@ -81,6 +81,8 @@ public interface ExtVisitorInterface {
 	//更新分镜头
 	public static final String UPDATESHOT = "updateShot";
 	
+	//根据上传图片生成视频以供下载
+	public static final String UPLOADFRAME = "uploadFrame";
 	
 	
 	//---------------订制API------------------------------------------------------
