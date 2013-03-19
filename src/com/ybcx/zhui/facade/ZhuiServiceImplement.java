@@ -703,8 +703,13 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	}
 
 	@Override
-	public int getTemplateCount() {
-		int result = dbVisitor.getTemplateCount();
+	public int getTemplateCount(String type) {
+		int result = 0;
+		if("all".equals(type)){
+			result = dbVisitor.getTemplateCount();
+		}else{
+			result = dbVisitor.getTemplateCountByType(type);
+		}
 		return result;
 	}
 

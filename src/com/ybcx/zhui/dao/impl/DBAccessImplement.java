@@ -377,6 +377,14 @@ public class DBAccessImplement  implements DBAccessInterface{
 		int res = jdbcTemplate.queryForInt(sql);
 		return res;
 	}
+	
+	@Override
+	public int getTemplateCountByType(String type) {
+		String sql = "select count(t_id) from t_template where t_enable=1 and t_type='"+type+"'";
+		int res = jdbcTemplate.queryForInt(sql);
+		return res;
+	}
+
 
 	@Override
 	public List<Template> getTemplate(int pageNum, int pageSize) {

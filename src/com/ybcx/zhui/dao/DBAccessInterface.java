@@ -55,6 +55,8 @@ public interface DBAccessInterface {
 	public List<Case> getCase(int pageNum, int pageSize);
 	
 	public int getTemplateCount();
+	
+	public int getTemplateCountByType(String type);
 
 	public List<Template> getTemplate(int pageNum, int pageSize);
 
@@ -79,6 +81,7 @@ public interface DBAccessInterface {
 	public int deleteOrder(String orderId);
 
 	public List<Order> getOrder(int pageNum, int pageSize);
+
 
 
 }

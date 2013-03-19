@@ -134,8 +134,8 @@ public class ApiAdaptor {
 		return JSONArray.fromCollection(list).toString();
 	}
 	
-	public int getTemplateCount() {
-		int result = zhuiService.getTemplateCount();
+	public int getTemplateCount(String type) {
+		int result = zhuiService.getTemplateCount(type);
 		return result;
 	}
 	

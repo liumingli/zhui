@@ -61,7 +61,7 @@ public interface ZhuiServiceInterface {
 
 	public List<Case> getCase(String pageNum, String pageSize);
 
-	public int getTemplateCount();
+	public int getTemplateCount(String type);
 
 	public List<Template> getTemplate(String pageNum, String pageSize);
 

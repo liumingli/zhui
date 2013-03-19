@@ -103,6 +103,8 @@ public class AssistProcess {
 			res.setContentType("text/plain;charset=UTF-8");
 			PrintWriter pw = res.getWriter();
 			String type = req.getParameter("type");
+			type = URLEncoder.encode(type,"ISO-8859-1");   
+			type =URLDecoder.decode(type, "UTF-8");  
 			String pageNum = req.getParameter("pageNum");
 			String pageSize = req.getParameter("pageSize");
 			String result = apiAdaptor.getTemplateByCateogry(type,pageNum,pageSize);
@@ -183,7 +185,10 @@ public class AssistProcess {
 		}else if(action.equals(AppStarter.GETTEMPLATECOUNT)){
 			res.setContentType("text/plain;charset=UTF-8");
 			PrintWriter pw = res.getWriter();
-			int result = apiAdaptor.getTemplateCount();
+			String type = req.getParameter("type");
+			type = URLEncoder.encode(type,"ISO-8859-1");   
+			type =URLDecoder.decode(type, "UTF-8");
+			int result = apiAdaptor.getTemplateCount(type);
 			pw.print(result);
 			pw.close();
 			
