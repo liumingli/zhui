@@ -70,7 +70,7 @@
 			<ul>
 				<li><input type="hidden" name="method" value="uploadFrame" />
 				</li>
-		<li>memoryId <input type="text" name="memoryId" value="1964124547"></li>
+		<li>memoryId <input type="text" name="memoryId" value="a175cafdbe578bfd"></li>
 			<li>status <input type="text" name="status" value="uploading"></li>
 				<li>上传文件<input type="file" name="file1" id="file1" size="30"
 					onchange="CheckFileType();" />

@@ -82,6 +82,8 @@ public interface DBAccessInterface {
 
 	public List<Order> getOrder(int pageNum, int pageSize);
 
+	public int updateMemoryVideo(String memoryId, String videoAddress);
+
 
 
 }

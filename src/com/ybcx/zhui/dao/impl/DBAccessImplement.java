@@ -215,7 +215,7 @@ public class DBAccessImplement  implements DBAccessInterface{
 					ps.setString(4, memory.getDialogues());
 					ps.setString(5, memory.getFrames());
 					ps.setString(6, memory.getCreateTime());
-					ps.setInt(7, memory.getVideo());
+					ps.setString(7, memory.getVideo());
 					ps.setInt(8, memory.getEnable());
 					ps.setString(9, "");
 				} catch (SQLException e) {
@@ -240,7 +240,7 @@ public class DBAccessImplement  implements DBAccessInterface{
 			memory.setDialogues(map.get("m_dialogues").toString());
 			memory.setFrames(map.get("m_frames").toString());
 			memory.setCreateTime(map.get("m_createTime").toString());
-			memory.setVideo(Integer.parseInt(map.get("m_video").toString()));
+			memory.setVideo(map.get("m_video").toString());
 			memory.setEnable(Integer.parseInt(map.get("m_enable").toString()));
 		}
 		return memory;
@@ -299,7 +299,7 @@ public class DBAccessImplement  implements DBAccessInterface{
 				memory.setDialogues(map.get("m_dialogues").toString());
 				memory.setFrames(map.get("m_frames").toString());
 				memory.setCreateTime(map.get("m_createTime").toString());
-				memory.setVideo(Integer.parseInt(map.get("m_video").toString()));
+				memory.setVideo(map.get("m_video").toString());
 				memory.setEnable(Integer.parseInt(map.get("m_enable").toString()));
 				resList.add(memory);
 			}
@@ -582,6 +582,23 @@ public class DBAccessImplement  implements DBAccessInterface{
 			}
 		}
 		return resList;
+	}
+
+	@Override
+	public int updateMemoryVideo(final String memoryId, final String videoAddress) {
+		String sql = "update t_memory set m_video=? where m_id=?";
+		int res =jdbcTemplate.update(sql, new PreparedStatementSetter() {
+			public void setValues(PreparedStatement ps) {
+				try {
+					ps.setString(1, videoAddress);
+					ps.setString(2, memoryId);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		return res;
 	}
 
 }

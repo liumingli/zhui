@@ -599,7 +599,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		memory.setFrames(frames);
 		memory.setCreateTime(ZhuiUtils.getFormatNowTime());
 		memory.setEnable(1);
-		memory.setVideo(0);
+		memory.setVideo("");
 		return memory;
 	}
 
@@ -859,6 +859,10 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 			
 			if("complete".equals(status)){
 				String videoAddress = this.convertImageToVideo(imgFolder,memoryId);
+				//更新数据库
+				if(!"false".equals(videoAddress)){
+					dbVisitor.updateMemoryVideo(memoryId,videoAddress);
+				}
 				return videoAddress;
 			}else{
 				//上传成功，则插入数据库
