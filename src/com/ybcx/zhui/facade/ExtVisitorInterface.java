@@ -84,6 +84,9 @@ public interface ExtVisitorInterface {
 	//根据上传图片生成视频以供下载
 	public static final String UPLOADFRAME = "uploadFrame";
 	
+	//根据批量上传图片生成视频以供下载
+	public static final String UPLOADFRAMES = "uploadFrames";
+	
 	
 	//---------------订制API------------------------------------------------------
 	

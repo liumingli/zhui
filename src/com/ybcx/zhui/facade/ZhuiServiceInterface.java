@@ -84,4 +84,8 @@ public interface ZhuiServiceInterface {
 
 	public String saveVideoImage(FileItem imgData, String memoryId, String status);
 
+	public boolean saveVideoImages(FileItem imgData, String memoryId);
+
+	public String convertImagesToVideo(String memoryId);
+
 }

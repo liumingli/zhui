@@ -41,7 +41,7 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 	private AssistProcess assistProcess;
 
 	// 最大文件上传尺寸设置
-	private int fileMaxSize = 4 * 1024 * 1024;
+	private int fileMaxSize = 10 * 1024 * 1024;
 	// 上传组件
 	private ServletFileUpload upload;
 
@@ -172,6 +172,9 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 		    	String method = getMethod(fileItems);
 			    if(method.equals(AppStarter.UPLOADFRAME)){
 					String result = apiAdaptor.uploadFrame(fileItems);
+					pw.write(result);
+			    }else  if(method.equals(AppStarter.UPLOADFRAMES)){
+					String result = apiAdaptor.uploadFrames(fileItems);
 					pw.write(result);
 					
 				 }else{

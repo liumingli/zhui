@@ -840,11 +840,18 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	public String saveVideoImage(FileItem imgData, String memoryId, String status) {
 
 			//先初始化存储位置
-			String imgFolder = imagePath+File.separator+"template"+File.separator+"video"+File.separator+memoryId;
-			File fp = new File(imgFolder);
+			String videoFolder = imagePath+File.separator+"template"+File.separator+"video";
+			File fp = new File(videoFolder);
 			if(!fp.exists()){
 				fp.mkdir();
 			}
+			
+			String imgFolder =videoFolder +File.separator+memoryId;
+			File folder = new File(imgFolder);
+			if(!folder.exists()){
+				folder.mkdir();
+			}
+			
 			String fileName = imgData.getName();
 			String path = imgFolder +File.separator+fileName;
 			try {
@@ -877,10 +884,11 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	//根据图片生成video
 	private String convertImageToVideo(String imgFolder,String memeoryId){
 		String ffmpegPath =systemConfigurer.getProperty("ffmpegPath");
+		String videoSize = systemConfigurer.getProperty("videoSize");
 		//最后一张则去调用生成视频，并返回拼好的地址
 		String videoPath = imagePath+File.separator+"template"+File.separator+"video"+ File.separator+memeoryId+".flv";
 		
-		FfmpegProcess.imageToVideo(ffmpegPath, imgFolder, videoPath);
+		FfmpegProcess.imageToVideo(ffmpegPath, imgFolder, videoPath,videoSize);
 		
 		if(new File(videoPath).exists()){
 			//删除图片文件夹
@@ -892,6 +900,71 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 			return "false";
 		}
 		
+	}
+
+	@Override
+	public boolean saveVideoImages(FileItem imgData, String memoryId) {
+		boolean flag = false;
+		//先初始化存储位置
+		String videoFolder = imagePath+File.separator+"template"+File.separator+"video";
+		File fp = new File(videoFolder);
+		if(!fp.exists()){
+			fp.mkdir();
+		}
+		
+		String imgFolder =videoFolder +File.separator+memoryId;
+		File folder = new File(imgFolder);
+		if(!folder.exists()){
+			folder.mkdir();
+		}
+		
+		String fileName = imgData.getName();
+		String path = imgFolder +File.separator+fileName;
+		try {
+			BufferedInputStream in = new BufferedInputStream(imgData.getInputStream());
+			// 获得文件输入流
+			BufferedOutputStream outStream = new BufferedOutputStream(new FileOutputStream(new File(path)));// 获得文件输出流
+			Streams.copy(in, outStream, true);// 开始把文件写到你指定的上传文件夹
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		if(new File(path).exists()){
+			flag = true;
+		}
+		return flag;
+	}
+
+	@Override
+	public String convertImagesToVideo(String memoryId) {
+		String ffmpegPath =systemConfigurer.getProperty("ffmpegPath");
+		String videoSize = systemConfigurer.getProperty("videoSize");
+		
+		String imgFolder =  imagePath+File.separator+"template"+File.separator+"video"+ File.separator+memoryId;
+		String videoPath = imagePath+File.separator+"template"+File.separator+"video"+ File.separator+memoryId+".flv";
+		
+		FfmpegProcess.imageToVideo(ffmpegPath, imgFolder, videoPath,videoSize);
+		
+		if(new File(videoPath).exists()){
+			if(new File(ffmpegPath).exists()){
+				//删除图片文件夹
+				DeleteFile delFile = new DeleteFile();
+				delFile.delFolder(imgFolder);
+				
+				//更新数据库
+				String videoAddress =ZhuiUtils.processFilepath(videoPath);
+				dbVisitor.updateMemoryVideo(memoryId,videoAddress);
+				
+				return videoAddress;
+			}else{
+				log.info("you have not  install ffmpeg");
+				return "false";
+			}
+			
+		}else{
+			log.info("image folder not exist");
+			return "false";
+		}
 	}
 
 }

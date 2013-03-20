@@ -7,10 +7,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
+import org.apache.commons.fileupload.FileItem;
 
 import com.ybcx.zhui.beans.Case;
 import com.ybcx.zhui.beans.Memory;
@@ -206,6 +206,39 @@ public class ApiAdaptor {
 		}//取参数完成
 	
 		String result = zhuiService.saveVideoImage(imgData,memoryId,status);
+		
+		return result;
+	}
+	
+	public String uploadFrames(List<FileItem> fileItems) {
+		String result = "";
+		FileItem imgData = null;
+		String memoryId = "";
+		
+		for (int i = 0; i < fileItems.size(); i++) {
+			FileItem item = fileItems.get(i);
+			if (item.isFormField()) {
+				if (item.getFieldName().equals("memoryId")) {
+					memoryId = item.getString();
+				}
+			}
+		}
+		
+		for (int j = 0; j < fileItems.size(); j++) {
+			FileItem fileItem = fileItems.get(j);
+			if (!fileItem.isFormField()) {
+				//图片数据
+				imgData = fileItem;
+			}
+			if(imgData != null && !"".equals(memoryId)){
+				//存图片
+				zhuiService.saveVideoImages(imgData,memoryId);
+			}
+		}
+		
+		if(!"".equals(memoryId)){
+			result = zhuiService.convertImagesToVideo(memoryId);
+		}
 		
 		return result;
 	}

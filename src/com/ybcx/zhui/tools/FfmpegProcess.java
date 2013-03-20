@@ -5,12 +5,12 @@ import java.io.IOException;
 
 public class FfmpegProcess {
 	
-	public static void imageToVideo(String ffmpegPath, String imgFolder,String videoPath){
+	public static void imageToVideo(String ffmpegPath, String imgFolder,String videoPath,String videoSize){
 	try {
-			String cmdStr =" -r 4 -f image2 -i "+imgFolder+File.separator+"%d.png -s 320x240 -aspect 4:3 -y "+videoPath;
+			String cmdStr =" -r 4 -f image2 -i "+imgFolder+File.separator+"%d.png -s "+videoSize+" -aspect 4:3 -y "+videoPath;
 			Process p =exec(ffmpegPath +cmdStr,false);
 			System.out.println(p.waitFor());
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

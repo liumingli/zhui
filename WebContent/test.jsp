@@ -68,7 +68,7 @@
 			onsubmit="return checkBlank();" onreset="clearMsg();"
 			action="zhuiapi" method="post"  enctype="multipart/form-data">
 			<ul>
-				<li><input type="hidden" name="method" value="uploadFrame" />
+				<li><input type="hidden" name="method" value="uploadFrames" />
 				</li>
 		<li>memoryId <input type="text" name="memoryId" value="a175cafdbe578bfd"></li>
 			<li>status <input type="text" name="status" value="uploading"></li>
