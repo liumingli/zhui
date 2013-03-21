@@ -943,7 +943,12 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		String imgFolder =  imagePath+File.separator+"template"+File.separator+"video"+ File.separator+memoryId;
 		String videoPath = imagePath+File.separator+"template"+File.separator+"video"+ File.separator+memoryId+".flv";
 		
-		FfmpegProcess.imageToVideo(ffmpegPath, imgFolder, videoPath,videoSize);
+		try{
+			FfmpegProcess.imageToVideo(ffmpegPath, imgFolder, videoPath,videoSize);
+		}catch(Exception e){
+			log.info("ffmpeg process exception");
+			e.printStackTrace();
+		}
 		
 		if(new File(videoPath).exists()){
 			if(new File(ffmpegPath).exists()){
@@ -957,12 +962,11 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 				
 				return videoAddress;
 			}else{
-				log.info("you have not  install ffmpeg");
+				log.info("ffmpeg convert image to video error");
 				return "false";
 			}
 			
 		}else{
-			log.info("image folder not exist");
 			return "false";
 		}
 	}
