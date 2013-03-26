@@ -84,6 +84,8 @@ public interface DBAccessInterface {
 
 	public int updateMemoryVideo(String memoryId, String videoAddress);
 
+	public int getOrderCount();
+
 
 
 }

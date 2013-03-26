@@ -99,6 +99,9 @@ public interface ExtVisitorInterface {
 	//删除一个订单
 	public static final String DELETEORDER = "deleteOrder";
 	
+	//获取订单总数
+	public static final String GETORDERCOUNT = "getOrderCount";
+	
 	//分页取订单
 	public static final String GETORDER = "getOrder";
 }

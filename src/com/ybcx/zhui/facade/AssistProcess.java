@@ -275,6 +275,14 @@ public class AssistProcess {
 			pw.print(result);
 			pw.close();	
 			
+		}else if(action.equals(AppStarter.GETORDERCOUNT)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			int result = apiAdaptor.getOrderCount();
+			pw.print(result);
+			pw.close();	
+			
+			
 		}else if(action.equals(AppStarter.GETORDER)){
 			res.setContentType("text/plain;charset=UTF-8");
 			PrintWriter pw = res.getWriter();

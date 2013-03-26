@@ -601,4 +601,11 @@ public class DBAccessImplement  implements DBAccessInterface{
 		return res;
 	}
 
+	@Override
+	public int getOrderCount() {
+		String sql = "select count(o_id) from t_order where o_enable=1";
+		int res = jdbcTemplate.queryForInt(sql);
+		return res;
+	}
+
 }

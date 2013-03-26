@@ -82,6 +82,8 @@ public interface ZhuiServiceInterface {
 
 	public List<Order> getOrder(String pageNum, String pageSize);
 
+	public int getOrderCount();
+
 	public String saveVideoImage(FileItem imgData, String memoryId, String status);
 
 	public boolean saveVideoImages(FileItem imgData, String memoryId);

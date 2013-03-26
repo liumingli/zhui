@@ -7,7 +7,7 @@ public class FfmpegProcess {
 	
 	public static void imageToVideo(String ffmpegPath, String imgFolder,String videoPath,String videoSize){
 //	try {
-			String cmdStr =" -r 12 -f image2 -i "+imgFolder+File.separator+"%d.png -s "+videoSize+" -aspect 4:3 -y "+videoPath;
+			String cmdStr =" -r 4 -f image2 -i "+imgFolder+File.separator+"%d.png -s "+videoSize+" -aspect 4:3 -y "+videoPath;
 			Process p =exec(ffmpegPath +cmdStr,false);
 //			System.out.println(p.waitFor());
 //		} catch (Exception e) {

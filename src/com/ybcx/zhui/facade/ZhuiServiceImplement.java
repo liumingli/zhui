@@ -835,6 +835,13 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		List<Order> list = dbVisitor.getOrder(Integer.parseInt(pageNum),Integer.parseInt(pageSize));
 		return list;
 	}
+	
+	@Override
+	public int getOrderCount() {
+		int res = dbVisitor.getOrderCount();
+		return res;
+	}
+
 
 	@Override
 	public String saveVideoImage(FileItem imgData, String memoryId, String status) {

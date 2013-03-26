@@ -180,6 +180,13 @@ public class ApiAdaptor {
 		return JSONArray.fromCollection(list).toString();
 	}
 	
+	public int getOrderCount() {
+		int result = zhuiService.getOrderCount();
+		return result;
+	}
+	
+	
+	
 	public String uploadFrame(List<FileItem> fileItems) {
 		FileItem imgData = null;
 		String memoryId = "";
@@ -242,6 +249,6 @@ public class ApiAdaptor {
 		
 		return result;
 	}
-	
+
 
 } // end of class
