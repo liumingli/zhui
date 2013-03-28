@@ -21,13 +21,13 @@ function uploadShot(){
 function changeCss() {
 	 var o = document.getElementById('funsion');
 	 o.setAttribute('href', 'css/style.css');
-	 console.log(o.getAttribute('href'));
 }
 
 function getTemplate(){
 	$('#template').attr("value","");
 	$.post('/zhui/zhuiapi', {
-		'method'  : 'getTemplateCount'
+		'method'  : 'getTemplateCount',
+		'type' : 'all'
 	}, 
 	function (result) {
 		if(result > 0){
