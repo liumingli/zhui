@@ -110,20 +110,6 @@ function checkShotNull(){
 	var bubbleSize = $("#bubbleSize").val();
 	var template = $("#template").val();
 	
-	 var radio = document.getElementsByName("radiobutton");
-		for(var i=0;i<radio.length;i++)
-		{
-		     if(radio.item(i).checked){
-		    	 bubble=radio.item(i).getAttribute("value");  
-		    	if(bubble == 0){
-		    		bubbleSize=bubble;
-		    	}
-		         break;
-		     }else{
-		    	 continue;
-		     }
-		}
-
 	if(name != null && name != "" && swf != null && swf != "" && frame != null && frame != ""
 		&& thumbnail != null && thumbnail != "" && bubbleSize !=null && bubbleSize !=""
 		&& template != null && template != "" 	){
@@ -183,9 +169,23 @@ function emptyForm(){
 	$("#thumbnailInfo").hide();
 	$("#frame").val("");
 	$("#frameInfo").hide();
-	$("#bubbleSize").val("");
 	$('#bubbleInfo').hide();
 	$('#prompt').hide();
+	 var radio = document.getElementsByName("radiobutton");
+		for(var i=0;i<radio.length;i++)
+		{
+		     if(radio.item(i).checked){
+		    	 bubble=radio.item(i).getAttribute("value");  
+		    	if(bubble == "0"){
+		    		$("#bubbleSize").val("0");
+		    	}else{
+		    		$("#bubbleSize").val("");
+		    	}
+		         break;
+		     }else{
+		    	 continue;
+		     }
+		}
 }
 
 function getQueryString(name) {
