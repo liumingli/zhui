@@ -218,6 +218,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 
 	private void writeSWF(InputStream imageIn, HttpServletResponse res, File file) {
 //		res.addHeader("content-length",String.valueOf(file.length()));
+//		res.setContentLength(Integer.parseInt(String.valueOf(file.length())));
 		res.setContentType(SWF);
 		getOutInfo(imageIn, res);
 	}
