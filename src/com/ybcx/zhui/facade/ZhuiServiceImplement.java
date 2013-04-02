@@ -28,7 +28,14 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.util.Streams;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+
+import weibo4j.Timeline;
+import weibo4j.Users;
+import weibo4j.http.ImageItem;
+import weibo4j.model.Status;
+import weibo4j.model.WeiboException;
 
 import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
@@ -40,6 +47,7 @@ import com.ybcx.zhui.beans.Memory;
 import com.ybcx.zhui.beans.Order;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
+import com.ybcx.zhui.beans.User;
 import com.ybcx.zhui.dao.DBAccessInterface;
 import com.ybcx.zhui.tools.DeleteFile;
 import com.ybcx.zhui.tools.FfmpegProcess;
@@ -979,4 +987,134 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		}
 	}
 
+	@Override
+	public String operateWeiboUser(String userId, String accessToken) {
+		boolean flag = false;
+		
+		weibo4j.model.User weiboUser = this.getUserByIdAndToken(userId, accessToken);
+		String nickName = "佚名";
+		if(weiboUser != null){
+			nickName = weiboUser.getScreenName();
+		}else{
+			log.warn("weibo user is null");
+		}
+		//先判断用户是否存在
+		int rows = dbVisitor.checkUserExist(userId);
+		//存在即更新数据，不存在就插入新记录
+		if(rows >0){
+			int udpRows = dbVisitor.updateUserById(userId,accessToken,nickName);
+			if(udpRows > 0){
+				flag = true;
+			}
+		}else{
+			User user = this.generateUser(userId, accessToken, nickName);
+			int crtRows = dbVisitor.createNewUser(user);
+			if(crtRows > 0){
+				flag = true;
+			}
+		}
+		return String.valueOf(flag);
+	}
+
+	private User generateUser(String userId, String accessToken, String nickName){
+		User user = new User();
+		user.setId(userId);
+		user.setNickName(nickName);
+		user.setCreateTime(ZhuiUtils.getFormatNowTime());
+		user.setAccessToken(accessToken);
+		return user;
+	}
+	
+	//根据token和uid获取用户信息
+	private weibo4j.model.User  getUserByIdAndToken(String userId, String accessToken) {
+		weibo4j.model.User wbUser = null;
+		Users um = new Users();
+		um.client.setToken(accessToken);
+		try {
+			wbUser = um.showUserById(userId);
+		} catch (WeiboException e) {
+			e.printStackTrace();
+			log.info("catch WeiboException : "+ExceptionUtils.getStackTrace(e));
+		}
+		return wbUser;
+	}
+
+	@Override
+	public String createWeiboImage(FileItem shotData) {
+		String fileName = shotData.getName();
+		String fileFolder = imagePath + File.separator +"template"+File.separator+"weibo";
+		File fp = new File(fileFolder);
+		if(!fp.exists()){
+			fp.mkdir();
+		}
+		String filePath = fileFolder+File.separator+fileName;
+		File file = new File(filePath);
+		try {
+			shotData.write(file);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return filePath;
+	}
+
+	@Override
+	public String shareToWeibo(String userId, String content, String imgPath) {
+			boolean flag = false;
+			User user = dbVisitor.getUserById(userId);
+			String token = user.getAccessToken();
+			String weiboId = this.publishWeibo(token, imgPath,  content);
+			//发送微博成功，
+			if(!"".equals(weiboId)){
+				flag = true;
+			}else{
+				log.info("Weibo exception, return status is null");
+			}
+			
+			return String.valueOf(flag);
+	}
+
+	private String publishWeibo(String token, String imgPath, String content) {
+		String weiboId = "";
+		try{
+			try{
+				byte[] imgContent= readFileImage(imgPath);
+				ImageItem pic=new ImageItem("pic",imgContent);
+				
+				
+				String s=java.net.URLEncoder.encode(content,"utf-8");
+				Timeline tl = new Timeline();
+				tl.client.setToken(token);
+				Status status=tl.UploadStatus(s, pic);
+				
+				//发送成功后返回微博id
+				weiboId = status.getId();
+				
+				log.info("Successfully upload the status to ["
+						+status.getText()+"].");
+			}catch(Exception e1){
+				e1.printStackTrace();
+				log.info("WeiboException: invalid_access_token.");
+			}
+		}catch(Exception ioe){
+			ioe.printStackTrace();
+			log.info("Failed to read the system input.");
+		}
+		
+		return weiboId;
+	}
+	
+	private byte[] readFileImage(String filename) throws Exception {
+		BufferedInputStream bufferedInputStream=new BufferedInputStream(
+				new FileInputStream(filename));
+		int len =bufferedInputStream.available();
+		byte[] bytes=new byte[len];
+		int r=bufferedInputStream.read(bytes);
+		if(len !=r){
+			bytes=null;
+			throw new IOException("读取文件不正确");
+		}
+		bufferedInputStream.close();
+		return bytes;
+	}
 }

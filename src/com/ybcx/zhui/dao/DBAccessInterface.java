@@ -8,6 +8,7 @@ import com.ybcx.zhui.beans.Memory;
 import com.ybcx.zhui.beans.Order;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
+import com.ybcx.zhui.beans.User;
 
 
 public interface DBAccessInterface {
@@ -85,6 +86,14 @@ public interface DBAccessInterface {
 	public int updateMemoryVideo(String memoryId, String videoAddress);
 
 	public int getOrderCount();
+
+	public int checkUserExist(String userId);
+
+	public int updateUserById(String userId, String accessToken, String nickName);
+
+	public int createNewUser(User user);
+
+	public User getUserById(String userId);
 
 
 

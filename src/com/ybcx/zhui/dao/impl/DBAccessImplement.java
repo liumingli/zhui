@@ -17,6 +17,7 @@ import com.ybcx.zhui.beans.Memory;
 import com.ybcx.zhui.beans.Order;
 import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
+import com.ybcx.zhui.beans.User;
 import com.ybcx.zhui.dao.DBAccessInterface;
 
 public class DBAccessImplement  implements DBAccessInterface{
@@ -606,6 +607,58 @@ public class DBAccessImplement  implements DBAccessInterface{
 		String sql = "select count(o_id) from t_order where o_enable=1";
 		int res = jdbcTemplate.queryForInt(sql);
 		return res;
+	}
+
+	@Override
+	public int checkUserExist(String userId) {
+		String sql = "select count(u_id) from t_user where u_id='"+userId+"'";
+		int rows = jdbcTemplate.queryForInt(sql);
+		return rows;
+	}
+
+	@Override
+	public int createNewUser(final User user) {
+		String sql = "insert into t_user(u_id,u_nickName,u_accessToken,u_createTime,u_memo) values (?,?,?,?,?)";
+		int res =jdbcTemplate.update(sql, new PreparedStatementSetter() {
+			public void setValues(PreparedStatement ps) {
+				try {
+					ps.setString(1, user.getId());
+					ps.setString(2, user.getNickName());
+					ps.setString(3, user.getAccessToken());
+					ps.setString(4, user.getCreateTime());
+					ps.setString(5, "");
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+
+		return res;
+	}
+
+	@Override
+	public int updateUserById(String userId, String accessToken, String nickName) {
+		String sql = "update t_user set u_accessToken='"+accessToken+"',u_nickName='"+nickName+"' where u_id='"+userId+"'";
+		int rows = jdbcTemplate.update(sql);
+		return rows;
+	}
+
+	@Override
+	public User getUserById(String userId) {
+		User user = new User();
+		String sql = "select * from t_user where u_id='"+userId+"'";
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			for (int i = 0; i < rows.size(); i++) {
+				Map<String, Object> map = (Map<String, Object>) rows.get(i);
+				user.setId(map.get("u_id").toString());
+				user.setAccessToken(map.get("u_accessToken").toString());
+				user.setCreateTime(map.get("u_createTime").toString());
+			}
+		}
+		return user;
 	}
 
 }

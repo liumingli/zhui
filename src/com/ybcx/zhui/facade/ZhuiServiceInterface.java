@@ -90,4 +90,10 @@ public interface ZhuiServiceInterface {
 
 	public String convertImagesToVideo(String memoryId);
 
+	public String operateWeiboUser(String userId, String accessToken);
+
+	public String createWeiboImage(FileItem shotData);
+
+	public String shareToWeibo(String userId, String content, String imgPath);
+
 }

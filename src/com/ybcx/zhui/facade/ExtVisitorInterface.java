@@ -104,4 +104,14 @@ public interface ExtVisitorInterface {
 	
 	//分页取订单
 	public static final String GETORDER = "getOrder";
+	
+	
+	//微博相关api----------------------------------------------------
+	
+	//操作微博账号
+	public static final String OPERATEWEIBOUSER = "operateWeiboUser";
+	
+	//发送长图片到微博
+	public static final String SHARETOWEIBO = "shareToWeibo";
+	
 }

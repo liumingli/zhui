@@ -90,11 +90,11 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 		}
 		
 		//微博接入有关api
-//		if(){
-//			
-//			weiboProcess(action,req,res);
-//			return;
-//		}
+		if(action.equals(AppStarter.OPERATEWEIBOUSER)){
+			
+			weiboProcess(action,req,res);
+			return;
+		}
 			
 			//获取图片，将图片流写到response
 		if (action.equals(AppStarter.GETTHUMBNAIL)
@@ -111,6 +111,30 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 		
 	}
 	
+	
+	/**
+	 * 处理微博相关API
+	 * @param action
+	 * @param req
+	 * @param res
+	 * @throws IOException 
+	 */
+
+	private void weiboProcess(String action, HttpServletRequest req,
+			HttpServletResponse res) throws IOException {
+		
+		if (action.equals(AppStarter.OPERATEWEIBOUSER)) {
+			//判断用户是存在，存在更新，否则新建
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String userId =req.getParameter("userId");
+			String accessToken = req.getParameter("accessToken");
+			String result = apiAdaptor.operateWeiboUser(userId,accessToken);
+			pw.print(result);
+			pw.close();
+			
+		}
+	}
 
 	/**
 	 * 处理get方式的用户请求
@@ -170,11 +194,20 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 			}else{
 				
 		    	String method = getMethod(fileItems);
+		    	
+		    	//根据上传图片生成视频
 			    if(method.equals(AppStarter.UPLOADFRAME)){
 					String result = apiAdaptor.uploadFrame(fileItems);
 					pw.write(result);
+					
+				//根据批量上传图片生成视频
 			    }else  if(method.equals(AppStarter.UPLOADFRAMES)){
 					String result = apiAdaptor.uploadFrames(fileItems);
+					pw.write(result);
+				
+				//发图片到微博
+			    }else  if(method.equals(AppStarter.SHARETOWEIBO)){
+					String result = apiAdaptor.shareToWeibo(fileItems);
 					pw.write(result);
 					
 				 }else{

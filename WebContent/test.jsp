@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>背景上传</title>
+<title>万能测试页面</title>
 
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="cache-control" content="no-cache">
@@ -15,11 +15,11 @@
 <script type="text/javascript" language="javascript">
 	function CheckFileType() {		 
 		var objFileUpload = document.getElementById('file1');//FileUpload 
-		var objMSG = document.getElementById('msg');//显示提示信息用的DIV 
-		var FileName = new String(objFileUpload.value);//文件名 
-		var extension = new String(FileName.substring(FileName.lastIndexOf(".") + 1, FileName.length));//文件扩展名
+		var objMSG = document.getElementById('msg');//æ¾ç¤ºæç¤ºä¿¡æ¯ç¨çDIV 
+		var FileName = new String(objFileUpload.value);//æä»¶å 
+		var extension = new String(FileName.substring(FileName.lastIndexOf(".") + 1, FileName.length));//æä»¶æ©å±å
 		extension = extension.toLowerCase();
-		if (extension == "jpg" || extension == "png")//你可以添加扩展名 
+		if (extension == "jpg" || extension == "png")//ä½ å¯ä»¥æ·»å æ©å±å 
 		{
 			objMSG.innerHTML="it's ok, now go to Upload!";
 		} else {
@@ -32,7 +32,7 @@
 	function clearFileInput(file){
 	    var form=document.createElement('form');
 	    document.body.appendChild(form);
-	    //记住file在旧表单中的的位置
+	    //è®°ä½fileå¨æ§è¡¨åä¸­ççä½ç½®
 	    var pos=file.nextSibling;
 	    form.appendChild(file);
 	    form.reset();
@@ -42,10 +42,10 @@
 
 	function checkBlank(){
 		var objFileUpload = document.getElementById('file1');//FileUpload
-		var selectedFile = new String(objFileUpload.value);//文件名
+		var selectedFile = new String(objFileUpload.value);//æä»¶å
 					
 		if(selectedFile==""){
-			var objMSG = document.getElementById('msg');//显示提示信息用的DIV
+			var objMSG = document.getElementById('msg');//æ¾ç¤ºæç¤ºä¿¡æ¯ç¨çDIV
 			objMSG.innerHTML="No file selected!";
 			return false;			
 		}else{
@@ -56,27 +56,26 @@
 	} 
 
 	function clearMsg(){
-		var objMSG = document.getElementById('msg');//显示提示信息用的DIV
+		var objMSG = document.getElementById('msg');//æ¾ç¤ºæç¤ºä¿¡æ¯ç¨çDIV
 		objMSG.innerHTML="";
 	}
 	
 </script>
 <body>
-	<!-- 	<div id="legend">背景上传</div> -->
 	<div id="content">
 		<form name="uploadForm" id="uploadForm"
 			onsubmit="return checkBlank();" onreset="clearMsg();"
 			action="zhuiapi" method="post"  enctype="multipart/form-data">
 			<ul>
-				<li><input type="hidden" name="method" value="uploadFrames" />
+				<li><input type="hidden" name="method" value="shareToWeibo" />
 				</li>
-		<li>memoryId <input type="text" name="memoryId" value="a175cafdbe578bfd"></li>
-			<li>status <input type="text" name="status" value="uploading"></li>
-				<li>上传文件<input type="file" name="file1" id="file1" size="30"
+		<li>userId <input type="text" name="userId" value="1964124547"></li>
+			<li>content <input type="text" name="content" value="测试发图"></li>
+				<li>图片<input type="file" name="file1" id="file1" size="30"
 					onchange="CheckFileType();" />
 				</li>
 				<li><div id="msg"></div>
-				<li><input type="submit" name="submit" value="测试"> <input
+				<li><input type="submit" name="submit" value="上传"> <input
 					type="reset" name="reset" value="重置"><br />
 				</li>
 			</ul>

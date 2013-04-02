@@ -3,6 +3,8 @@
  */
 package com.ybcx.zhui.facade;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -249,6 +251,68 @@ public class ApiAdaptor {
 		
 		return result;
 	}
+	
+	public String operateWeiboUser(String userId, String accessToken) {
+		String result = zhuiService.operateWeiboUser(userId,accessToken);
+		return result;
+	}
+	
+	public String shareToWeibo(List<FileItem> fileItems) {
+		String result = "false";
+		//先保存图片
+		String imgPath = this.createImage(fileItems);
+		File imgFile = new File(imgPath);
+		if(imgFile.exists()){
+			//再发微博
+			result = this.publishImageWeibo(fileItems,imgPath);
+		}else{
+			
+		}
+		return result;
+	}
+	
+	private String createImage(List<FileItem> fileItems) {
+		FileItem shotData = null;
+		for (int i = 0; i < fileItems.size(); i++) {
+			FileItem item = fileItems.get(i);
+			if (!item.isFormField()) {
+				//图片数据
+				shotData = item;
+			}
+		}
+	
+		String result = zhuiService.createWeiboImage(shotData);
+		return result;
+	}
+	
+	private String publishImageWeibo(List<FileItem> fileItems, String imgPath) {
+		String userId = "";
+		String content = "";
+		
+		for (int i = 0; i < fileItems.size(); i++) {
+			
+			FileItem item = fileItems.get(i);
+			if (item.isFormField()) {
+				
+				if (item.getFieldName().equals("userId")) {
+					userId = item.getString();
+				}
+				
+				if (item.getFieldName().equals("content")) {
+					try {
+						content = item.getString("UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}//取参数完成
+		
+		String result = zhuiService.shareToWeibo(userId,content,imgPath);
+		
+		return result;
+	}
+
 
 
 } // end of class
