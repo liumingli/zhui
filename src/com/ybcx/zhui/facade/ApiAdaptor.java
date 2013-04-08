@@ -220,7 +220,7 @@ public class ApiAdaptor {
 	}
 	
 	public String uploadFrames(List<FileItem> fileItems) {
-		String result = "";
+		String result = "false";
 		FileItem imgData = null;
 		String memoryId = "";
 		

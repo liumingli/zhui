@@ -41,7 +41,7 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 	private AssistProcess assistProcess;
 
 	// 最大文件上传尺寸设置
-	private int fileMaxSize = 10 * 1024 * 1024;
+	private int fileMaxSize = 20 * 1024 * 1024;
 	// 上传组件
 	private ServletFileUpload upload;
 

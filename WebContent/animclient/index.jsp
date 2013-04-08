@@ -1,4 +1,4 @@
-<%@page import="javax.swing.text.Document"%>
+﻿<%@page import="javax.swing.text.Document"%>
 <%@ page language="java" import="java.util.*,weibo4j.Oauth"
 	contentType="text/html; charset=UTF-8"%>
 <%
@@ -22,7 +22,7 @@ body {
 	padding: 0;
 	overflow: auto;
 	text-align: center;
-	background: url("assets/icon_web/wood40.png") repeat scroll 0 0 transparent;
+	background: url("assets/nimei/zhui.jpg");
 }
 
 object:focus {
@@ -54,6 +54,7 @@ object:focus {
 			//弹出授权层
 			authLoad();
 		} else {
+
 			//看用户是否存在,存库或更新库
 			operateUser(userId, accessToken);
 			//动态创建应用
@@ -98,7 +99,7 @@ object:focus {
 		attributes.id = divId;
 		attributes.name = divId;
 		attributes.align = "middle";
-		swfobject.embedSWF("Nimei.swf?v=1.0&date=0402", divId, w, h, swfVersionStr, xiSwfUrlStr,
+		swfobject.embedSWF("Nimei.swf?v=1.02&date=0408", divId, w, h, swfVersionStr, xiSwfUrlStr,
 				flashvars, params, attributes);
 		swfobject.createCSS("#" + divId, "display:block;text-align:left;");
 	}
