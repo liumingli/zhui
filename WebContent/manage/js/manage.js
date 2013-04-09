@@ -379,11 +379,11 @@ function editShot(id,bubbleSize,frame){
 	loadPopup();
 	$("#shot").val(id);
 	$("#bubbleSize").val(bubbleSize);
-	if(bubbleSize == "0"){
-		$("#bubbleSize").attr('disabled','disabled');
-	}else{
-		$("#bubbleSize").removeAttr('disabled');
-	}
+//	if(bubbleSize == "0"){
+//		$("#bubbleSize").attr('disabled','disabled');
+//	}else{
+//		$("#bubbleSize").removeAttr('disabled');
+//	}
 	$("#frame").val(frame);
 	$("#prompt").hide();
 	$("#bubbleInfo").hide();

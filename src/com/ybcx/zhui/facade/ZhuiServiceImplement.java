@@ -731,7 +731,11 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	@Override
 	public String updateShot(String shotId, String frame, String bubbleSize) {
 		boolean flag = false;
-		int res = dbVisitor.updateShot(shotId,Integer.parseInt(frame),bubbleSize);
+		int hasBubble = 0;
+		if(!"0".equals(bubbleSize)){
+			hasBubble=1;
+		}
+		int res = dbVisitor.updateShot(shotId,Integer.parseInt(frame),bubbleSize,hasBubble);
 		if(res > 0){
 			flag = true;
 		}

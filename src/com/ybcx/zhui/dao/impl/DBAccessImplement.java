@@ -412,8 +412,8 @@ public class DBAccessImplement  implements DBAccessInterface{
 	}
 
 	@Override
-	public int updateShot(String shotId, int frame, String bubbleSize) {
-		String sql = "update t_shot set s_frame="+frame+", s_bubbleSize='"+bubbleSize+"' where s_id='"+shotId+"'";
+	public int updateShot(String shotId, int frame, String bubbleSize, int hasBubble) {
+		String sql = "update t_shot set s_frame="+frame+", s_bubbleSize='"+bubbleSize+"', s_bubble="+hasBubble+" where s_id='"+shotId+"'";
 		int res = jdbcTemplate.update(sql);
 		return res;
 	}
