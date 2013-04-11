@@ -96,4 +96,7 @@ public interface ZhuiServiceInterface {
 
 	public String shareToWeibo(String userId, String content, String imgPath);
 
+	public String shareToTapp(String userId, String openId, String openKey,
+			String content, String ip, String imgPath);
+
 }

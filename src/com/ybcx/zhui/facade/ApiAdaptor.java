@@ -285,6 +285,7 @@ public class ApiAdaptor {
 		return result;
 	}
 	
+	//发图片到新浪微博
 	private String publishImageWeibo(List<FileItem> fileItems, String imgPath) {
 		String userId = "";
 		String content = "";
@@ -309,6 +310,66 @@ public class ApiAdaptor {
 		}//取参数完成
 		
 		String result = zhuiService.shareToWeibo(userId,content,imgPath);
+		
+		return result;
+	}
+	
+	
+	public String shareToTencent(List<FileItem> fileItems) {
+		String result = "false";
+		//先保存图片
+		String imgPath = this.createImage(fileItems);
+		File imgFile = new File(imgPath);
+		if(imgFile.exists()){
+			//再发微博
+			result = this.publishImageTapp(fileItems,imgPath);
+		}else{
+			
+		}
+		return result;
+	}
+	
+	//发图片到腾讯微博
+	private String publishImageTapp(List<FileItem> fileItems, String imgPath) {
+		String userId = "";
+		String content = "";
+		String openId = "";
+		String openKey = "";
+		String ip = "";
+		
+		for (int i = 0; i < fileItems.size(); i++) {
+			
+			FileItem item = fileItems.get(i);
+			if (item.isFormField()) {
+				
+				if (item.getFieldName().equals("userId")) {
+					userId = item.getString();
+				}
+				
+				if (item.getFieldName().equals("content")) {
+					try {
+						content = item.getString("UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				if (item.getFieldName().equals("openId")) {
+					openId = item.getString();
+				}
+				
+				if (item.getFieldName().equals("openKey")) {
+					openKey = item.getString();
+				}
+				
+				if (item.getFieldName().equals("ip")) {
+					ip = item.getString();
+				}
+				
+			}
+		}//取参数完成
+		
+		String result = zhuiService.shareToTapp(userId,openId,openKey,content,ip,imgPath);
 		
 		return result;
 	}

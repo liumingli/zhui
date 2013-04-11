@@ -124,7 +124,7 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 			HttpServletResponse res) throws IOException {
 		
 		if (action.equals(AppStarter.OPERATEWEIBOUSER)) {
-			//判断用户是存在，存在更新，否则新建
+			//新浪微博~判断用户是存在，存在更新，否则新建
 			res.setContentType("text/plain;charset=UTF-8");
 			PrintWriter pw = res.getWriter();
 			String userId =req.getParameter("userId");
@@ -205,10 +205,16 @@ public class AppStarter extends HttpServlet implements ApplicationListener,
 					String result = apiAdaptor.uploadFrames(fileItems);
 					pw.write(result);
 				
-				//发图片到微博
+				//发图片到新浪微博
 			    }else  if(method.equals(AppStarter.SHARETOWEIBO)){
 					String result = apiAdaptor.shareToWeibo(fileItems);
 					pw.write(result);
+					
+				//发图片到腾讯微博
+			    }else  if(method.equals(AppStarter.SHARETOTENCENT)){
+					String result = apiAdaptor.shareToTencent(fileItems);
+					pw.write(result);
+					
 					
 				 }else{
 					

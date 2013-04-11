@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -33,10 +35,14 @@ import org.apache.log4j.Logger;
 
 import weibo4j.Timeline;
 import weibo4j.Users;
+import weibo4j.http.HttpClient;
 import weibo4j.http.ImageItem;
+import weibo4j.model.PostParameter;
 import weibo4j.model.Status;
 import weibo4j.model.WeiboException;
 
+import com.qq.open.OpensnsException;
+import com.qq.open.SnsSigCheck;
 import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageDecoder;
@@ -1120,5 +1126,86 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		}
 		bufferedInputStream.close();
 		return bytes;
+	}
+
+	@Override
+	public String shareToTapp(String userId, String openId, String openKey,
+			String content, String ip, String imgPath) {
+		boolean flag = false;
+		if(new File(imgPath).exists()){
+			weibo4j.org.json.JSONObject response = publishTencentWeibo(content,openId,openKey,ip,imgPath);
+			//发微博成功
+			try {
+				if(response.getInt("ret") == 0){
+					weibo4j.org.json.JSONObject weibo = response.getJSONObject("data");
+					String weiboId = weibo.getString("id");
+					if(!"".equals(weiboId) && weiboId != null){
+						flag = true;
+					}
+				
+				}else{
+					log.info("Publish tencent weibo failed, error msg is "+response.getString("msg"));
+				}
+			} catch (weibo4j.org.json.JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return String.valueOf(flag);
+	}
+	
+	private weibo4j.org.json.JSONObject publishTencentWeibo(String content,String openId, String openKey,String ip, String imgPath) {
+		weibo4j.org.json.JSONObject response = new weibo4j.org.json.JSONObject();
+		String url = "http://open.t.qq.com/api/t/add_pic_url";
+		HttpClient client = new HttpClient();
+		client.setToken("123");
+		
+		String appKey = systemConfigurer.getProperty("appKey");
+		String appSecret = systemConfigurer.getProperty("appSecret");
+		
+		
+		int position = imgPath.lastIndexOf("uploadFile");
+		String relativePath = imgPath.substring(position+11);
+		
+		String picUrl = "http://diy.produ.cn/zhui/zhuiapi?method=getThumbnail&relativePath="+relativePath;
+		System.out.println(">>>>>>>>>>>>>"+picUrl);
+		
+		PostParameter appid = new PostParameter("appid",appKey);
+		PostParameter openid = new PostParameter("openid",openId);
+		PostParameter openkey = new PostParameter("openkey",openKey);
+		PostParameter wbversion = new PostParameter("wbversion","1");
+		PostParameter format = new PostParameter("format","json");
+		PostParameter contentParam = new PostParameter("content",content);
+		PostParameter clientip = new PostParameter("clientip",ip);
+		PostParameter pic = new PostParameter("pic_url",picUrl);
+		
+		
+		HashMap<String, String> map = new HashMap<String,String>();
+		map.put("appid",appKey);
+		map.put("openid",openId);
+		map.put("openkey",openKey);
+		map.put("wbversion","1");
+		map.put("reqtime",String.valueOf(new Date().getTime()));
+		
+		PostParameter sigParam = null;
+		
+		try {
+			String sig = SnsSigCheck.makeSig("post","t/add_pic_url", map, appSecret);
+			sigParam = new PostParameter("sig",sig);
+		} catch (OpensnsException e) {
+			e.printStackTrace();
+		}
+		
+		PostParameter[] params = new PostParameter[]{appid,openid,openkey,wbversion,format,contentParam,clientip,pic,sigParam};
+		
+		try {
+			response = client.post(url, params).asJSONObject();
+			System.out.println("Response："+response.toString());
+
+		} catch (WeiboException e) {
+			e.printStackTrace();
+		}
+		
+		return response;
 	}
 }

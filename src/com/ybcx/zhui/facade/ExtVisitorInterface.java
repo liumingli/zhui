@@ -114,4 +114,7 @@ public interface ExtVisitorInterface {
 	//发送长图片到微博
 	public static final String SHARETOWEIBO = "shareToWeibo";
 	
+	//发腾讯微博
+	public static final String SHARETOTENCENT = "shareToTencent";
+	
 }

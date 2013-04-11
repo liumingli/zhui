@@ -67,10 +67,14 @@
 			onsubmit="return checkBlank();" onreset="clearMsg();"
 			action="zhuiapi" method="post"  enctype="multipart/form-data">
 			<ul>
-				<li><input type="hidden" name="method" value="shareToWeibo" />
+				<li><input type="hidden" name="method" value="shareToTencent" />
 				</li>
 		<li>userId <input type="text" name="userId" value="1964124547"></li>
-			<li>content <input type="text" name="content" value="测试发图"></li>
+			<li>content <input type="text" name="content" value="测试测试"></li>
+			<li>openId <input type="text" name="openId" value="5BD7FC4A8E557D8A6F985AEFBC8B67A1"></li>
+			<li>openKey <input type="text" name="openKey" value="80B2F8809E13DA2222CAD2A87063A4D4 "></li>
+			<li>ip <input type="text" name="ip" value="119.57.20.234"></li>
+			
 				<li>图片<input type="file" name="file1" id="file1" size="30"
 					onchange="CheckFileType();" />
 				</li>
