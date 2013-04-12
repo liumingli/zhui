@@ -99,7 +99,7 @@ object:focus {
 		attributes.id = divId;
 		attributes.name = divId;
 		attributes.align = "middle";
-		swfobject.embedSWF("Nimei.swf?v=1.02&date=0408", divId, w, h, swfVersionStr, xiSwfUrlStr,
+		swfobject.embedSWF("Nimei.swf?v=1.02&date=0412", divId, w, h, swfVersionStr, xiSwfUrlStr,
 				flashvars, params, attributes);
 		swfobject.createCSS("#" + divId, "display:block;text-align:left;");
 	}

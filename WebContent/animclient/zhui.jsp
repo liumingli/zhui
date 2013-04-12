@@ -84,7 +84,7 @@
 			attributes.id = "flashContent";
 			attributes.name = "flashContent";
 			attributes.align = "middle";
-			swfobject.embedSWF("nimei.swf?v=1.03&date=0411", "flashContent", 760, 600, swfVersionStr, xiSwfUrlStr,
+			swfobject.embedSWF("Nimei.swf?v=1.02&date=0412", "flashContent", 760, 600, swfVersionStr, xiSwfUrlStr,
 					flashvars, params, attributes);
 			swfobject.createCSS("#flashContent", "display:block;text-align:left;");
 		}

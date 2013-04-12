@@ -1155,20 +1155,20 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	}
 	
 	private weibo4j.org.json.JSONObject publishTencentWeibo(String content,String openId, String openKey,String ip, String imgPath) {
+		
 		weibo4j.org.json.JSONObject response = new weibo4j.org.json.JSONObject();
 		String url = "http://open.t.qq.com/api/t/add_pic_url";
 		HttpClient client = new HttpClient();
-		client.setToken("123");
+		client.setToken("1234");
 		
 		String appKey = systemConfigurer.getProperty("appKey");
 		String appSecret = systemConfigurer.getProperty("appSecret");
-		
 		
 		int position = imgPath.lastIndexOf("uploadFile");
 		String relativePath = imgPath.substring(position+11);
 		
 		String picUrl = "http://diy.produ.cn/zhui/zhuiapi?method=getThumbnail&relativePath="+relativePath;
-		System.out.println(">>>>>>>>>>>>>"+picUrl);
+		log.info(">>>>>>>>>>>>>"+picUrl);
 		
 		PostParameter appid = new PostParameter("appid",appKey);
 		PostParameter openid = new PostParameter("openid",openId);
@@ -1200,7 +1200,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		
 		try {
 			response = client.post(url, params).asJSONObject();
-			System.out.println("Response："+response.toString());
+			log.info("Tapp Response："+response.toString());
 
 		} catch (WeiboException e) {
 			e.printStackTrace();
