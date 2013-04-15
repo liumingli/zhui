@@ -80,6 +80,8 @@ function createShot(){
 		     }
 		}
 		var bubbleSize = $('#bubbleSize').val();
+		var bubblePosition = $('#bubblePosition').val();
+		var videoImage = $('#videoImage').val();
 		
 		$.post('/zhui/zhuiapi',{
 			"method" : "saveShot",
@@ -89,6 +91,8 @@ function createShot(){
 			'frame' : frame,
 			'bubble' : bubble,
 			'bubbleSize' : bubbleSize,
+			'bubblePosition' : bubblePosition,
+			'videoImage' : videoImage,
 			'template' : template
 		},
 		function(result){
@@ -139,12 +143,20 @@ function hasBubbleClick(){
 	$('#bubbleInfo').hide();
 	$("#bubbleSize").removeAttr("disabled");
 	$("#bubbleSize").val("");
+	$("#bubblePosition").removeAttr("disabled");
+	$("#bubblePosition").val("");
+	$("#videoImage").removeAttr("disabled");
+	$("#videoImage").val("");
 }
 
 function noBubbleClick(){
 	$('#bubbleInfo').hide();
 	$("#bubbleSize").val(0);
 	$("#bubbleSize").attr('disabled','disabled');
+	$("#bubblePosition").val(0);
+	$("#bubblePosition").attr('disabled','disabled');
+	$("#videoImage").val(0);
+	$("#videoImage").attr('disabled','disabled');
 }
 
 function checkBubbleSize(){
@@ -178,8 +190,12 @@ function emptyForm(){
 		    	 bubble=radio.item(i).getAttribute("value");  
 		    	if(bubble == "0"){
 		    		$("#bubbleSize").val("0");
+		    		$("#bubblePosition").val("0");
+		    		$("#videoImage").val("0");
 		    	}else{
 		    		$("#bubbleSize").val("");
+		    		$("#bubblePosition").val("");
+		    		$("#videoImage").val("");
 		    	}
 		         break;
 		     }else{

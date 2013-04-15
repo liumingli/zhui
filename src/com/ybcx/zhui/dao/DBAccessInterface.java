@@ -61,7 +61,7 @@ public interface DBAccessInterface {
 
 	public List<Template> getTemplate(int pageNum, int pageSize);
 
-	public int updateShot(String shotId, int frame, String bubbleSize, int hasBubble);
+	public int updateShot(String shotId, int frame, String bubbleSize, String bubblePosition, String videoImage, int hasBubble);
 
 	public Case getCaseById(String caseId);
 

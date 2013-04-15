@@ -386,10 +386,30 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		Template template = this.generateTemplate(templateId,name,swf,thumbnail,type);
 		int res = dbVisitor.saveTemplate(template);
 		if(res > 0){
+			//为视频图片建一个目录
+			makeVideoDir(templateId);
 			return templateId;
 		}else{
 			return String.valueOf(flag);
 		}
+	}
+
+	private void makeVideoDir(String templateId) {
+		String videoPath = imagePath+File.separator+"template"+File.separator+"video";
+    	File fp = new File(videoPath);
+    	if(!fp.exists()){
+    		fp.mkdir();
+    	}else{
+	    	String videoImagePath = videoPath + File.separator + templateId;
+	    	File dir = new File(videoImagePath);
+	    	if(!dir.exists()){
+	    		dir.mkdir();
+	    	} 
+	    	
+	    	if(dir.exists()){
+	    		log.info("make videoImage path sueecess "+videoImagePath);
+	    	}
+    	}
 	}
 
 	private Template generateTemplate(String templateId,String name, String swf,
@@ -414,7 +434,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		int dels = dbVisitor.deleteShotByTemplate(templateId);
 		
 		//删除磁盘目录下的模板文件
-		deleteTemplateFile(templateId);
+		//deleteTemplateFile(templateId);
 		
 		if(rows ==1 &&  dels > 0){
 			flag = true;
@@ -445,9 +465,9 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 
 	@Override
 	public String saveShot(String name, String swf, String thumbnail,
-			String template, String frame, String bubble, String bubbleSize) {
+			String template, String frame, String bubble, String bubbleSize, String bubblePosition, String videoImage) {
 		boolean flag = false;
-		Shot shot = this.generateShot(name,swf,thumbnail,template,frame,bubble,bubbleSize);
+		Shot shot = this.generateShot(name,swf,thumbnail,template,frame,bubble,bubbleSize, bubblePosition,videoImage);
 		int res = dbVisitor.saveShot(shot);
 		if(res > 0){
 			flag = true;
@@ -456,7 +476,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	}
 
 	private Shot generateShot(String name, String swf, String thumbnail,
-			String template, String frame, String bubble, String bubbleSize) {
+			String template, String frame, String bubble, String bubbleSize, String bubblePosition, String videoImage) {
 		Shot shot = new Shot();
 		shot.setId(ZhuiUtils.generateUID());
 		shot.setName(name);
@@ -466,6 +486,8 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		shot.setFrame(Integer.parseInt(frame));
 		shot.setBubble(Integer.parseInt(bubble));
 		shot.setBubbleSize(bubbleSize);
+		shot.setBubblePosition(bubblePosition);
+		shot.setVideoImage(videoImage);
 		shot.setCreateTime(ZhuiUtils.getFormatNowTime());
 		shot.setEnable(1);
 		return shot;
@@ -735,13 +757,13 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	}
 
 	@Override
-	public String updateShot(String shotId, String frame, String bubbleSize) {
+	public String updateShot(String shotId, String frame, String bubbleSize, String bubblePosition, String videoImage) {
 		boolean flag = false;
 		int hasBubble = 0;
 		if(!"0".equals(bubbleSize)){
 			hasBubble=1;
 		}
-		int res = dbVisitor.updateShot(shotId,Integer.parseInt(frame),bubbleSize,hasBubble);
+		int res = dbVisitor.updateShot(shotId,Integer.parseInt(frame),bubbleSize,bubblePosition,videoImage,hasBubble);
 		if(res > 0){
 			flag = true;
 		}

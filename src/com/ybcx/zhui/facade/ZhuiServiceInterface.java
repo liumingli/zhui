@@ -34,7 +34,7 @@ public interface ZhuiServiceInterface {
 	public String deleteTemplate(String templateId);
 
 	public String saveShot(String name, String swf, String thumbnail,
-			String template, String frame, String bubble, String bubbleSize);
+			String template, String frame, String bubble, String bubbleSize, String bubblePosition, String videoImage);
 
 	public String deleteShot(String shotId);
 
@@ -65,7 +65,7 @@ public interface ZhuiServiceInterface {
 
 	public List<Template> getTemplate(String pageNum, String pageSize);
 
-	public String updateShot(String shotId, String frame, String bubbleSize);
+	public String updateShot(String shotId, String frame, String bubbleSize, String bubblePosition, String videoImage);
 
 	public String deleteMemory(String memoryId);
 

@@ -73,7 +73,9 @@ public class AssistProcess {
 			String frame = req.getParameter("frame");
 			String bubble = req.getParameter("bubble");
 			String bubbleSize = req.getParameter("bubbleSize");
-			String result = apiAdaptor.saveShot(name,swf,thumbnail,template,frame,bubble,bubbleSize);
+			String bubblePosition = req.getParameter("bubblePosition");
+			String videoImage = req.getParameter("videoImage");
+			String result = apiAdaptor.saveShot(name,swf,thumbnail,template,frame,bubble,bubbleSize,bubblePosition,videoImage);
 			pw.print(result);
 			pw.close();
 			
@@ -207,7 +209,9 @@ public class AssistProcess {
 			String shotId = req.getParameter("shotId");
 			String frame = req.getParameter("frame");
 			String bubbleSize = req.getParameter("bubbleSize");
-			String result = apiAdaptor.updateShot(shotId,frame,bubbleSize);
+			String bubblePosition = req.getParameter("bubblePosition");
+			String videoImage = req.getParameter("videoImage");
+			String result = apiAdaptor.updateShot(shotId,frame,bubbleSize,bubblePosition,videoImage);
 			pw.print(result);
 			pw.close();
 			

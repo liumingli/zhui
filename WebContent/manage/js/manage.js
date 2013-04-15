@@ -282,7 +282,7 @@ function generateShot(result){
 		
 		generateTd(result[key].createTime,key);
 		
-		generateEditOperate(result[key].id,result[key].bubbleSize,result[key].frame,key);
+		generateEditOperate(result[key].id,result[key].bubbleSize,result[key].frame,result[key].bubblePosition,result[key].videoImage,key);
 		
 		generateDelOperate(result[key].id,key);
 	}
@@ -299,11 +299,11 @@ function generateTd(txt,key){
 	.text(txt);
 }
 
-function generateEditOperate(id,bubbleSize,frame,key){
+function generateEditOperate(id,bubbleSize,frame,bubblePosition,videoImage,key){
 	$('<td></td>').appendTo($('#line'+key))
 	.append($('<a></a>')
 		.append($('<img>').attr("src","imgs/edit.png"))
-		.attr("href","javascript:editShot('"+id+"','"+bubbleSize+"','"+frame+"');"));
+		.attr("href","javascript:editShot('"+id+"','"+bubbleSize+"','"+frame+"','"+bubblePosition+"','"+videoImage+"');"));
 }
 
 function generateDelOperate(id,key){
@@ -374,11 +374,13 @@ function generateShotOptTd(id,frame,bubbleSize,num,td){
 	div.appendChild(aDel);
 }
 
-function editShot(id,bubbleSize,frame){
+function editShot(id,bubbleSize,frame,bubblePosition,videoImage){
 	centerPopup();
 	loadPopup();
 	$("#shot").val(id);
 	$("#bubbleSize").val(bubbleSize);
+	$("#bubblePosition").val(bubblePosition);
+	$("#videoImage").val(videoImage);
 //	if(bubbleSize == "0"){
 //		$("#bubbleSize").attr('disabled','disabled');
 //	}else{
@@ -414,11 +416,15 @@ function updateShot(){
 	if(checkNull()){
 		var id = $("#shot").val();
 		var bubbleSize = $("#bubbleSize").val();
+		var bubblePosition = $("#bubblePosition").val();
+		var videoImage = $("#videoImage").val();
 		var frame= $("#frame").val();
 		$.post('/zhui/zhuiapi', {
 			'method'  : 'updateShot',
 			'shotId' : id,
 			'bubbleSize' : bubbleSize,
+			'bubblePosition' : bubblePosition,
+			'videoImage' : videoImage,
 			'frame' : frame
 		}, 
 		//回调函数

@@ -74,8 +74,8 @@ public class ApiAdaptor {
 	}
 	
 	public String saveShot(String name, String swf, String thumbnail,
-			String template, String frame, String bubble, String bubbleSize) {
-		String res = zhuiService.saveShot(name,swf,thumbnail,template,frame,bubble,bubbleSize);
+			String template, String frame, String bubble, String bubbleSize, String bubblePosition, String videoImage) {
+		String res = zhuiService.saveShot(name,swf,thumbnail,template,frame,bubble,bubbleSize,bubblePosition,videoImage);
 		return res;
 	}
 	
@@ -146,8 +146,8 @@ public class ApiAdaptor {
 		return JSONArray.fromCollection(list).toString();
 	}
 	
-	public String updateShot(String shotId, String frame, String bubbleSize) {
-		String result = zhuiService.updateShot(shotId,frame,bubbleSize);
+	public String updateShot(String shotId, String frame, String bubbleSize, String bubblePosition, String videoImage) {
+		String result = zhuiService.updateShot(shotId,frame,bubbleSize,bubblePosition,videoImage);
 		return result;
 	}
 	

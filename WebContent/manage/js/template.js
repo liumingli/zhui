@@ -78,10 +78,15 @@ function createTemplate(){
 				$('#prompt').show().html("上传模板有误，请点击取消按钮重试");
 			}else{
 				var param ="('"+name+"','"+result+"')";
-				$('#prompt').show().html('<font color="red" size="2">提示：上传模板成功，现在去<a href="javascript:addShotPanel'+param+';">添加分镜头</a></font>');
+				$('#prompt').show().html('<font color="red" size="2">提示：上传模板成功，图片的目录为：uploadFile/template/video/'
+						+result+'<br>请向该路径上传生成视频所需图片，并且<a href="javascript:addShotPanel'+param+';">添加分镜头</a></font>');
 			}
 		});
 	}
+}
+	
+function createVideoImageDir(){
+	
 }
 
 function checkTemplateNull(){

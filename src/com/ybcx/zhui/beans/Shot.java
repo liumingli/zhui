@@ -15,6 +15,8 @@ public class Shot {
 	private int frame;
 	private int bubble;
 	private String bubbleSize;
+	private String bubblePosition;
+	private String videoImage;
 	private String createTime;
 	private int enable;
 	
@@ -65,6 +67,18 @@ public class Shot {
 	}
 	public void setBubbleSize(String bubbleSize) {
 		this.bubbleSize = bubbleSize;
+	}
+	public String getBubblePosition() {
+		return bubblePosition;
+	}
+	public void setBubblePosition(String bubblePosition) {
+		this.bubblePosition = bubblePosition;
+	}
+	public String getVideoImage() {
+		return videoImage;
+	}
+	public void setVideoImage(String videoImage) {
+		this.videoImage = videoImage;
 	}
 	public String getCreateTime() {
 		return createTime;

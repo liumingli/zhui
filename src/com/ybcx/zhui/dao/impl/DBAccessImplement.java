@@ -71,8 +71,8 @@ public class DBAccessImplement  implements DBAccessInterface{
 	@Override
 	public int saveShot(final Shot shot) {
 		String sql = "INSERT INTO t_shot "
-				+ "(s_id,s_name, s_swf, s_thumbnail, s_template, s_frame,s_bubble,s_bubbleSize, s_createTime,s_enable ,s_memo) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "(s_id,s_name, s_swf, s_thumbnail, s_template, s_frame,s_bubble,s_bubbleSize, s_bubblePosition, s_videoImage, s_createTime,s_enable ,s_memo) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		
 		int res =jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			public void setValues(PreparedStatement ps) {
@@ -85,9 +85,11 @@ public class DBAccessImplement  implements DBAccessInterface{
 					ps.setInt(6, shot.getFrame());
 					ps.setInt(7, shot.getBubble());
 					ps.setString(8, shot.getBubbleSize());
-					ps.setString(9, shot.getCreateTime());
-					ps.setInt(10, shot.getEnable());
-					ps.setString(11, "");
+					ps.setString(9, shot.getBubblePosition());
+					ps.setString(10, shot.getVideoImage());
+					ps.setString(11, shot.getCreateTime());
+					ps.setInt(12, shot.getEnable());
+					ps.setString(13, "");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -172,6 +174,8 @@ public class DBAccessImplement  implements DBAccessInterface{
 				shot.setFrame(Integer.parseInt(map.get("s_frame").toString()));
 				shot.setBubble(Integer.parseInt(map.get("s_bubble").toString()));
 				shot.setBubbleSize(map.get("s_bubbleSize").toString());
+				shot.setBubblePosition(map.get("s_bubblePosition").toString());
+				shot.setVideoImage(map.get("s_videoImage").toString());
 				shot.setCreateTime(map.get("s_createTime").toString());
 				shot.setEnable(Integer.parseInt(map.get("s_enable").toString()));
 				resList.add(shot);
@@ -195,6 +199,8 @@ public class DBAccessImplement  implements DBAccessInterface{
 			shot.setFrame(Integer.parseInt(map.get("s_frame").toString()));
 			shot.setBubble(Integer.parseInt(map.get("s_bubble").toString()));
 			shot.setBubbleSize(map.get("s_bubbleSize").toString());
+			shot.setBubblePosition(map.get("s_bubblePosition").toString());
+			shot.setVideoImage(map.get("s_videoImage").toString());
 			shot.setCreateTime(map.get("s_createTime").toString());
 			shot.setEnable(Integer.parseInt(map.get("s_enable").toString()));
 		}
@@ -412,8 +418,9 @@ public class DBAccessImplement  implements DBAccessInterface{
 	}
 
 	@Override
-	public int updateShot(String shotId, int frame, String bubbleSize, int hasBubble) {
-		String sql = "update t_shot set s_frame="+frame+", s_bubbleSize='"+bubbleSize+"', s_bubble="+hasBubble+" where s_id='"+shotId+"'";
+	public int updateShot(String shotId, int frame, String bubbleSize, String bubblePosition, String videoImage, int hasBubble) {
+		String sql = "update t_shot set s_frame="+frame+", s_bubbleSize='"+bubbleSize+"', s_bubblePosition ='"+bubblePosition+
+				"', s_videoImage ='"+videoImage+"', s_bubble="+hasBubble+" where s_id='"+shotId+"'";
 		int res = jdbcTemplate.update(sql);
 		return res;
 	}
