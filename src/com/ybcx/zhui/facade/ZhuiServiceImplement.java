@@ -1,9 +1,11 @@
 package com.ybcx.zhui.facade;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
@@ -431,12 +433,12 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		//删除模板
 		int rows = dbVisitor.deleteTemplate(templateId);
 		//删除分镜头
-		int dels = dbVisitor.deleteShotByTemplate(templateId);
+		dbVisitor.deleteShotByTemplate(templateId);
 		
 		//删除磁盘目录下的模板文件
 		//deleteTemplateFile(templateId);
 		
-		if(rows ==1 &&  dels > 0){
+		if(rows ==1){
 			flag = true;
 		}
 		return String.valueOf(flag);
@@ -930,18 +932,18 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	}
 	
 	//根据图片生成video
-	private String convertImageToVideo(String imgFolder,String memeoryId){
+	private String convertImageToVideo(String imgFolder,String memoryId){
 		String ffmpegPath =systemConfigurer.getProperty("ffmpegPath");
 		String videoSize = systemConfigurer.getProperty("videoSize");
 		//最后一张则去调用生成视频，并返回拼好的地址
-		String videoPath = imagePath+File.separator+"template"+File.separator+"video"+ File.separator+memeoryId+".flv";
+		String videoPath = imagePath+File.separator+"template"+File.separator+"video"+ File.separator+memoryId+".flv";
 		
 		FfmpegProcess.imageToVideo(ffmpegPath, imgFolder, videoPath,videoSize);
 		
 		if(new File(videoPath).exists()){
 			//删除图片文件夹
-			DeleteFile delFile = new DeleteFile();
-			delFile.delFolder(imgFolder);
+//			DeleteFile delFile = new DeleteFile();
+//			delFile.delFolder(imgFolder);
 			
 			return ZhuiUtils.processFilepath(videoPath);
 		}else{
@@ -1230,4 +1232,143 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		
 		return response;
 	}
+
+	@Override
+	public String createVideo(String memoryId) {
+		// TODO Auto-generated method stub
+		//1、根据memoryId取出memory
+		Memory memory = dbVisitor.getMemoryById(memoryId);
+		String templateId = memory.getTemplate();
+		String dialogueIds = memory.getDialogues();
+		String frames = memory.getFrames();
+		String dialogueArr[] = dialogueIds.split(",");
+		String frameArr[] = frames.split(",");
+		
+		//临时存放贴上对白的图片文件夹
+		String tempFolder= createTempImageDir(templateId);
+		
+		if(!"false".equals(tempFolder)){
+		
+			for(int i=0;i<dialogueArr.length;i++){
+				String dialogueId = dialogueArr[i];
+				int frame = Integer.parseInt(frameArr[i]);
+				
+				//根据templateId和frame确定shot，并找到图片贴上对白图片
+				Shot shot = dbVisitor.getShotByTemplateAndFrame(templateId,frame);
+				String shotId = shot.getId();
+				String bubblePosition = shot.getBubblePosition();
+				String videoImage = shot.getVideoImage();
+				String positionArr[] = bubblePosition.split(",");
+				String imageArr[] = videoImage.split(",");
+				int x=Integer.parseInt(positionArr[0]);
+				int y=Integer.parseInt(positionArr[1]);
+				int start=Integer.parseInt(imageArr[0]);
+				int end=Integer.parseInt(imageArr[1]);
+				
+				//贴图并复制图片
+			    combineDialogueWithImage(tempFolder,dialogueId,shotId,x,y,start,end);
+			}
+		
+			//将处理好的临时文件夹下的图片生成视频
+			String videoAddress = convertImageToVideo(tempFolder, String.valueOf(System.currentTimeMillis()));
+			if(!"false".equals(videoAddress)){
+				dbVisitor.updateMemoryVideo(memoryId,videoAddress);
+			}
+			return videoAddress;
+		}else{
+			return "false";
+		}
+	}
+	
+
+	//将对白图片贴到视频文件的正确位置上
+	private void combineDialogueWithImage(String tempFolder, String dialogueId,
+			String shotId, int x, int y, int start, int end) {
+		// TODO Auto-generated method stub
+		String relativePath = dbVisitor.getDialogueFilePath(dialogueId);
+		String dialoguePath =  imagePath + File.separator +relativePath;
+		File dialogueFile = new File(dialoguePath);
+		for(int i=start;i<=end;i++){
+			//购造出要贴对白的目标图片的名字
+			String imagePath= tempFolder + File.separator + String.valueOf(i)+".png";
+			File imageFile = new File(imagePath);
+			try {
+				pressImage(imageFile,dialogueFile,x,y,1f,0);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	//将对白图片贴到图片的指定位置
+	private void pressImage(File srcFile, File waterMarkFile, int x, int y,
+			float alpha, double degree) throws Exception {
+		// 加载目标图片
+		Image srcImg = ImageIO.read(srcFile);
+		int src_width = srcImg.getWidth(null);
+		int src_height = srcImg.getHeight(null);
+		// 将图片加载到内存
+		BufferedImage bufImg = new BufferedImage(src_width, src_height,
+				BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = bufImg.createGraphics();
+		g.drawImage(srcImg, 0, 0, src_width, src_height, null);
+		// 加载水印图片
+		Image waterMarkImage = ImageIO.read(waterMarkFile);
+		int w_width = waterMarkImage.getWidth(null);
+		int w_height = waterMarkImage.getHeight(null);
+		// 设置透明度
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
+				alpha));
+		g.rotate(-Math.PI / 180 * degree, (double) bufImg.getWidth() / 2,
+				(double) bufImg.getHeight() / 2);
+
+		// 将水印图片“画”在目标图片的指定位置
+		g.drawImage(waterMarkImage, x, y, w_width, w_height, null);
+		g.dispose();
+		ImageIO.write(bufImg, "png", srcFile);
+	} 
+	  
+
+	private String createTempImageDir(String templateId) {
+		String fileFolder = imagePath + File.separator +"template"+File.separator+"video";
+		String imageFolder = fileFolder+File.separator+templateId;
+		String tempFolder = fileFolder+File.separator+System.currentTimeMillis();
+		File fp = new File(tempFolder);
+		if(!fp.exists()){
+			fp.mkdir();
+		}
+		if(copyImage(imageFolder,tempFolder)){
+			return tempFolder;
+		}else{
+			return "false";
+		}
+	}
+	
+	private boolean copyImage(String oldPath, String newPath) {
+		boolean flag = false;
+		File oldFile = new File(oldPath);
+		File newFile = new File(newPath);
+		if (oldFile.exists()) {
+			byte[] b = new byte[(int) oldFile.length()];
+			if (oldFile.isFile()) {
+				try {
+					FileInputStream is = new FileInputStream(oldFile);
+					FileOutputStream ps = new FileOutputStream(newFile);
+					is.read(b);
+					ps.write(b);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else if (oldFile.isDirectory()) {
+				if (!oldFile.exists())
+					oldFile.mkdir();
+				String[] list = oldFile.list();
+				for (int i = 0; i < list.length; i++) {
+					this.copyImage(oldPath + "/" + list[i], newPath + "/" + list[i]);
+				}
+			}
+			flag = true;
+		}
+		return flag;
+	}  
 }

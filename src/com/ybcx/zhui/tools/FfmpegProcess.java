@@ -11,7 +11,7 @@ public class FfmpegProcess {
 			//空格问题，需要转译一下
 			imgFolder = imgFolder.replaceAll(" ", "\" \"");
 			videoPath = videoPath.replaceAll(" ", "\" \"");
-			String cmdStr =" -r 4 -f image2 -i "+imgFolder+File.separator+"%d.png -s "+videoSize+" -aspect 4:3 -y "+videoPath;
+			String cmdStr =" -r 6 -f image2 -i "+imgFolder+File.separator+"%d.png -s "+videoSize+" -aspect 4:3 -y "+videoPath;
 			Process p =exec(ffmpegPath +cmdStr,false);
 			System.out.println(p.waitFor());
 		} catch (Exception e) {

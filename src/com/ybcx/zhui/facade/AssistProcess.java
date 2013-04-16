@@ -295,6 +295,15 @@ public class AssistProcess {
 			String result = apiAdaptor.getOrder(pageNum,pageSize);
 			pw.print(result);
 			pw.close();
+		
+		//生成视频
+		}else if(action.equals(AppStarter.CREATEVIDEO)){
+			res.setContentType("text/plain;charset=UTF-8");
+			PrintWriter pw = res.getWriter();
+			String memoryId = req.getParameter("memoryId");
+			String result = apiAdaptor.createVideo(memoryId);
+			pw.print(result);
+			pw.close();
 			
 		}else{
 			

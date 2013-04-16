@@ -373,6 +373,11 @@ public class ApiAdaptor {
 		
 		return result;
 	}
+	
+	public String createVideo(String memoryId) {
+		String result = zhuiService.createVideo(memoryId);
+		return result;
+	}
 
 
 

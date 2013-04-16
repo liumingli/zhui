@@ -99,4 +99,6 @@ public interface ZhuiServiceInterface {
 	public String shareToTapp(String userId, String openId, String openKey,
 			String content, String ip, String imgPath);
 
+	public String createVideo(String memoryId);
+
 }

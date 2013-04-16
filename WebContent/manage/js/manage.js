@@ -257,7 +257,7 @@ function refactorTable(){
 	
 	//重新构造thead
 	$('#templateTable').append("<thead><tr><td>序号</td><td>缩略图</td><td>帧数</td>" +
-	"<td>气泡大小</td><td>上传时间</td><td>编辑</td><td>删除</td></tr></thead>");
+	"<td>气泡大小</td><td>气泡位置</td><td>视频图片</td><td>上传时间</td><td>编辑</td><td>删除</td></tr></thead>");
 	//重新构造tbody
 	$('#templateTable').append("<tbody id='templateList'></tbody>");
 	
@@ -279,6 +279,10 @@ function generateShot(result){
 		generateTd(result[key].frame,key);
 
 		generateTd(result[key].bubbleSize,key);
+		
+		generateTd(result[key].bubblePosition,key);
+		
+		generateTd(result[key].videoImage,key);
 		
 		generateTd(result[key].createTime,key);
 		

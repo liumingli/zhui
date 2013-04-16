@@ -95,6 +95,8 @@ public interface DBAccessInterface {
 
 	public User getUserById(String userId);
 
+	public Shot getShotByTemplateAndFrame(String templateId, int frame);
+
 
 
 }

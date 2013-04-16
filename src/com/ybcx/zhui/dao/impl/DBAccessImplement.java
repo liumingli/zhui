@@ -668,4 +668,30 @@ public class DBAccessImplement  implements DBAccessInterface{
 		return user;
 	}
 
+	@Override
+	public Shot getShotByTemplateAndFrame(String templateId, int frame) {
+		Shot shot = new Shot();
+		String sql = "select * from t_shot where s_template='"+templateId+"' and s_frame ="+frame+" and s_enable=1 ";
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+		if (rows != null && rows.size() > 0) {
+			for (int i = 0; i < rows.size(); i++) {
+				Map<String, Object> map = (Map<String, Object>) rows.get(i);
+				shot.setId(map.get("s_id").toString());
+				shot.setName(map.get("s_name").toString());
+				shot.setSwf(map.get("s_swf").toString());
+				shot.setThumbnail(map.get("s_thumbnail").toString());
+				shot.setTemplate(map.get("s_template").toString());
+				shot.setFrame(Integer.parseInt(map.get("s_frame").toString()));
+				shot.setBubble(Integer.parseInt(map.get("s_bubble").toString()));
+				shot.setBubbleSize(map.get("s_bubbleSize").toString());
+				shot.setBubblePosition(map.get("s_bubblePosition").toString());
+				shot.setVideoImage(map.get("s_videoImage").toString());
+				shot.setCreateTime(map.get("s_createTime").toString());
+				shot.setEnable(Integer.parseInt(map.get("s_enable").toString()));
+			}
+		}
+		return shot;
+	}
+	
+
 }
