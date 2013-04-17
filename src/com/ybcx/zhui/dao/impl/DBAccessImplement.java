@@ -692,6 +692,15 @@ public class DBAccessImplement  implements DBAccessInterface{
 		}
 		return shot;
 	}
+
+	@Override
+	public String getDialogueContentById(String dialogueId) {
+		String content = "";
+		String sql = "select d_content from t_dialogue where d_id='"+dialogueId+"'";
+		Map<String,Object> map = jdbcTemplate.queryForMap(sql);
+		content = map.get("d_content").toString();
+		return content;
+	}
 	
 
 }

@@ -1245,32 +1245,44 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		String frameArr[] = frames.split(",");
 		
 		//临时存放贴上对白的图片文件夹
+		long s =System.currentTimeMillis();
 		String tempFolder= createTempImageDir(templateId);
+		System.out.println("copy all image "+(System.currentTimeMillis() - s));
 		
 		if(!"false".equals(tempFolder)){
-		
+			//FIXME 给所有的图片贴mark
+//			long e =System.currentTimeMillis();
+//			markAllVideoImage(tempFolder,420,340);
+//			System.out.println("mark all image "+(System.currentTimeMillis() - e));
+			
 			for(int i=0;i<dialogueArr.length;i++){
 				String dialogueId = dialogueArr[i];
 				int frame = Integer.parseInt(frameArr[i]);
 				
 				//根据templateId和frame确定shot，并找到图片贴上对白图片
 				Shot shot = dbVisitor.getShotByTemplateAndFrame(templateId,frame);
-				String shotId = shot.getId();
+				
 				String bubblePosition = shot.getBubblePosition();
-				String videoImage = shot.getVideoImage();
 				String positionArr[] = bubblePosition.split(",");
-				String imageArr[] = videoImage.split(",");
 				int x=Integer.parseInt(positionArr[0]);
 				int y=Integer.parseInt(positionArr[1]);
+
+				String videoImage = shot.getVideoImage();
+				String imageArr[] = videoImage.split(",");
 				int start=Integer.parseInt(imageArr[0]);
 				int end=Integer.parseInt(imageArr[1]);
 				
-				//贴图并复制图片
-			    combineDialogueWithImage(tempFolder,dialogueId,shotId,x,y,start,end);
+				
+				//FIXME 贴对白
+				long cs =System.currentTimeMillis();
+				combineDialogueWithImage(tempFolder,dialogueId,x,y,start,end);
+				System.out.println("paste dialogue image"+(System.currentTimeMillis() - cs));
 			}
 		
-			//将处理好的临时文件夹下的图片生成视频
+			//FIXME 将处理好的临时文件夹下的图片生成视频
+			long vs =System.currentTimeMillis();
 			String videoAddress = convertImageToVideo(tempFolder, String.valueOf(System.currentTimeMillis()));
+			System.out.println("create video "+(System.currentTimeMillis() - vs));
 			if(!"false".equals(videoAddress)){
 				dbVisitor.updateMemoryVideo(memoryId,videoAddress);
 			}
@@ -1279,12 +1291,52 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 			return "false";
 		}
 	}
+
+	private void markAllVideoImage(String tempFolder, int x, int y) {
+		File markFile = new File(imagePath + File.separator + "template" + File.separator + "dialogue" + File.separator +"mark.png");
+		int imgCount = new File(tempFolder).listFiles().length;
+		for(int i=0;i<imgCount;i++){
+			//购造出要贴对白的目标图片的名字
+			String imagePath= tempFolder + File.separator + String.valueOf(i)+".png";
+			File imageFile = new File(imagePath);
+			//给所有的图片加mark
+			try {
+				//pressImage(imageFile,markFile,x,y,1f,0);
+				pressText(imageFile,"@智慧动画",x,y,1f,0);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
+	 private void pressText(File scrFile, String waterText, int x, int y,
+	            float alpha, double degree) throws Exception {  
+	        // 加载目标图片  
+	        Image srcImg = ImageIO.read(scrFile);  
+	        int src_width = srcImg.getWidth(null);  
+	        int src_height = srcImg.getHeight(null);  
+	        
+	        // 将目标图片加载到内存  
+	        BufferedImage bufImg = new BufferedImage(src_width, src_height,  
+	                BufferedImage.TYPE_INT_RGB);  
+	        Graphics2D g = bufImg.createGraphics();  
+	        g.drawImage(srcImg, 0, 0, src_width, src_height, null);  
+	        
+	        Font font = new Font("宋体", Font.PLAIN, 12);
+	        g.setFont(font);  
+	        g.setColor(Color.WHITE);  
+	    	/** 防止生成的文字带有锯齿 * */
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	        // 将水印图片“画”在目标图片的指定位置  
+	        g.drawString(waterText, x, y);  
+	        // 保存目标图片  
+	        ImageIO.write(bufImg, "png", scrFile);  
+	    }  
 
 	//将对白图片贴到视频文件的正确位置上
 	private void combineDialogueWithImage(String tempFolder, String dialogueId,
-			String shotId, int x, int y, int start, int end) {
-		// TODO Auto-generated method stub
+		 int x, int y, int start, int end) {
 		String relativePath = dbVisitor.getDialogueFilePath(dialogueId);
 		String dialoguePath =  imagePath + File.separator +relativePath;
 		File dialogueFile = new File(dialoguePath);
@@ -1298,8 +1350,8 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 				e.printStackTrace();
 			}
 		}
-		
 	}
+	
 	//将对白图片贴到图片的指定位置
 	private void pressImage(File srcFile, File waterMarkFile, int x, int y,
 			float alpha, double degree) throws Exception {
@@ -1326,6 +1378,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		g.drawImage(waterMarkImage, x, y, w_width, w_height, null);
 		g.dispose();
 		ImageIO.write(bufImg, "png", srcFile);
+
 	} 
 	  
 
@@ -1371,4 +1424,5 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		}
 		return flag;
 	}  
+	
 }

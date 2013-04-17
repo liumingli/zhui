@@ -97,6 +97,8 @@ public interface DBAccessInterface {
 
 	public Shot getShotByTemplateAndFrame(String templateId, int frame);
 
+	public String getDialogueContentById(String dialogueId);
+
 
 
 }
