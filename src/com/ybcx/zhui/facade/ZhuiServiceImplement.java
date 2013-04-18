@@ -1402,13 +1402,28 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		File oldFile = new File(oldPath);
 		File newFile = new File(newPath);
 		if (oldFile.exists()) {
-			byte[] b = new byte[(int) oldFile.length()];
+//			byte[] b = new byte[(int) oldFile.length()];
 			if (oldFile.isFile()) {
 				try {
-					FileInputStream is = new FileInputStream(oldFile);
-					FileOutputStream ps = new FileOutputStream(newFile);
-					is.read(b);
-					ps.write(b);
+//					FileInputStream is = new FileInputStream(oldFile);
+//					FileOutputStream ps = new FileOutputStream(newFile);
+//					is.read(b);
+//					ps.write(b);
+					// 加载目标图片
+					Image srcImg = ImageIO.read(oldFile);
+					int src_width = srcImg.getWidth(null);
+					int src_height = srcImg.getHeight(null);
+					// 将图片加载到内存
+					BufferedImage bufImg = new BufferedImage(src_width, src_height,
+							BufferedImage.TYPE_INT_RGB);
+					Graphics2D g = bufImg.createGraphics();
+					g.drawImage(srcImg, 0, 0, src_width, src_height, null);
+					g.dispose();
+					
+					long ds =System.currentTimeMillis();
+					ImageIO.write(bufImg, "png", newFile);
+					System.out.println("write image "+(System.currentTimeMillis() - ds));
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
