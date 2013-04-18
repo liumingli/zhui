@@ -59,6 +59,7 @@ import com.ybcx.zhui.beans.User;
 import com.ybcx.zhui.dao.DBAccessInterface;
 import com.ybcx.zhui.tools.DeleteFile;
 import com.ybcx.zhui.tools.FfmpegProcess;
+import com.ybcx.zhui.tools.ImgDataProcessor;
 import com.ybcx.zhui.utils.ZhuiUtils;
 
 public class ZhuiServiceImplement implements ZhuiServiceInterface {
@@ -68,12 +69,19 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	// 由Spring注入
 	private DBAccessInterface dbVisitor;
 	
+	// 由Spring注入
+	private ImgDataProcessor imgProcessor;
+	
 	public void setDbVisitor(DBAccessInterface dbVisitor) {
 		this.dbVisitor = dbVisitor;
 	}
 
 	private String imagePath;
 	
+	public void setImgProcessor(ImgDataProcessor imgProcessor) {
+		this.imgProcessor = imgProcessor;
+	}
+
 	@Override
 	public void saveImagePathToProcessor(String filePath) {
 	//	this.imgProcessor.setImagePath(filePath);
@@ -444,6 +452,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		return String.valueOf(flag);
 	}
 	
+	@SuppressWarnings("unused")
 	private void deleteTemplateFile(String templateId){
 		List<String> pathList = new ArrayList<String>();
 		//删除模板文件
@@ -1235,7 +1244,6 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 
 	@Override
 	public String createVideo(String memoryId) {
-		// TODO Auto-generated method stub
 		//1、根据memoryId取出memory
 		Memory memory = dbVisitor.getMemoryById(memoryId);
 		String templateId = memory.getTemplate();
@@ -1244,17 +1252,18 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		String dialogueArr[] = dialogueIds.split(",");
 		String frameArr[] = frames.split(",");
 		
+		//原始图片路径
+		String rawFolder =  imagePath + File.separator +"template"+File.separator+"video"+File.separator +templateId;
 		//临时存放贴上对白的图片文件夹
-		long s =System.currentTimeMillis();
-		String tempFolder= createTempImageDir(templateId);
-		System.out.println("copy all image "+(System.currentTimeMillis() - s));
+		String tempFolder =  imagePath + File.separator +"template"+File.separator+"video"+File.separator+System.currentTimeMillis();
+		File fp = new File(tempFolder);
+		if(!fp.exists()){
+			fp.mkdir();
+		}
 		
-		if(!"false".equals(tempFolder)){
-			//FIXME 给所有的图片贴mark
-//			long e =System.currentTimeMillis();
-//			markAllVideoImage(tempFolder,420,340);
-//			System.out.println("mark all image "+(System.currentTimeMillis() - e));
-			
+		int rawFolderSize = new File(rawFolder).listFiles().length;
+		if(rawFolderSize > 0){	
+			//确定需要贴对白的图片
 			for(int i=0;i<dialogueArr.length;i++){
 				String dialogueId = dialogueArr[i];
 				int frame = Integer.parseInt(frameArr[i]);
@@ -1266,32 +1275,47 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 				String positionArr[] = bubblePosition.split(",");
 				int x=Integer.parseInt(positionArr[0]);
 				int y=Integer.parseInt(positionArr[1]);
-
+		
 				String videoImage = shot.getVideoImage();
 				String imageArr[] = videoImage.split(",");
 				int start=Integer.parseInt(imageArr[0]);
 				int end=Integer.parseInt(imageArr[1]);
-				
-				
-				//FIXME 贴对白
-				long cs =System.currentTimeMillis();
-				combineDialogueWithImage(tempFolder,dialogueId,x,y,start,end);
-				System.out.println("paste dialogue image"+(System.currentTimeMillis() - cs));
+			
+				for(int m=0;m<rawFolderSize;m++){
+					File oldFile = new File(rawFolder+File.separator+String.valueOf(m)+".png");
+					File newFile = new File(tempFolder+File.separator+String.valueOf(m)+".png");
+					
+					if(m>=start && m<=end){
+						//对白图片
+						String relativePath = dbVisitor.getDialogueFilePath(dialogueId);
+						String dialoguePath =  imagePath + File.separator +relativePath;
+						File dialogueFile = new File(dialoguePath);
+						//贴对白
+						imgProcessor.createImageFile(oldFile, newFile, dialogueFile,x,y);
+					}else{
+						//普通mark输出
+						imgProcessor.createImageFile(oldFile, newFile, null, 0, 0);
+					}
+				}
 			}
 		
-			//FIXME 将处理好的临时文件夹下的图片生成视频
-			long vs =System.currentTimeMillis();
-			String videoAddress = convertImageToVideo(tempFolder, String.valueOf(System.currentTimeMillis()));
-			System.out.println("create video "+(System.currentTimeMillis() - vs));
-			if(!"false".equals(videoAddress)){
-				dbVisitor.updateMemoryVideo(memoryId,videoAddress);
-			}
-			return videoAddress;
+//			//FIXME 将处理好的临时文件夹下的图片生成视频
+//			long vs =System.currentTimeMillis();
+//			String videoAddress = convertImageToVideo(tempFolder, String.valueOf(System.currentTimeMillis()));
+//			System.out.println("create video "+(System.currentTimeMillis() - vs));
+//			if(!"false".equals(videoAddress)){
+//				dbVisitor.updateMemoryVideo(memoryId,videoAddress);
+//			}
+//			return videoAddress;
+			return "";
 		}else{
+			log.info("video image not exist");
 			return "false";
 		}
 	}
 
+	//给所有的图片添加水印文字
+	@SuppressWarnings("unused")
 	private void markAllVideoImage(String tempFolder, int x, int y) {
 		File markFile = new File(imagePath + File.separator + "template" + File.separator + "dialogue" + File.separator +"mark.png");
 		int imgCount = new File(tempFolder).listFiles().length;
@@ -1384,17 +1408,19 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 
 	private String createTempImageDir(String templateId) {
 		String fileFolder = imagePath + File.separator +"template"+File.separator+"video";
-		String imageFolder = fileFolder+File.separator+templateId;
 		String tempFolder = fileFolder+File.separator+System.currentTimeMillis();
 		File fp = new File(tempFolder);
 		if(!fp.exists()){
 			fp.mkdir();
-		}
-		if(copyImage(imageFolder,tempFolder)){
 			return tempFolder;
 		}else{
 			return "false";
 		}
+//		if(copyImage(imageFolder,tempFolder)){
+//			return tempFolder;
+//		}else{
+//			return "false";
+//		}
 	}
 	
 	private boolean copyImage(String oldPath, String newPath) {
