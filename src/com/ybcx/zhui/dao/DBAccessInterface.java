@@ -99,6 +99,8 @@ public interface DBAccessInterface {
 
 	public String getDialogueContentById(String dialogueId);
 
+	public String getVideoPath(String resId);
+
 
 
 }

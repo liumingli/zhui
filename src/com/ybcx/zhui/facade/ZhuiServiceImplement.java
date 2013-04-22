@@ -259,6 +259,11 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 			filePath = dbVisitor.getShotFilePath(resId);
 		}else if(("dialogue").equals(type)){//只取image
 			filePath = dbVisitor.getDialogueFilePath(resId);
+		}else if(("video").equals(type)){//生成flv文件并返回
+			filePath = dbVisitor.getVideoPath(resId);
+			if("".equals(filePath)){
+				filePath = createVideo(resId);
+			}
 		}else{
 			filePath= "default.png";
 		}
@@ -277,7 +282,9 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 					writePNGImage(imageIn, res, file);
 				} else if (fileType.toLowerCase().equals("gif")) {
 					writeGIFImage(imageIn, res, file);
-				} 
+				} else if (fileType.toLowerCase().equals("flv")) {
+					writeFlvVideo(imageIn, res, file);
+				}
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -1246,7 +1253,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	@Override
 	public String createVideo(String memoryId) {
 		long sisy = System.currentTimeMillis();
-		String videoAddress = "false";
+		String videoAddress = "default.png";
 		//1、根据memoryId取出memory
 		Memory memory = dbVisitor.getMemoryById(memoryId);
 		String templateId = memory.getTemplate();
@@ -1324,7 +1331,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 						break;
 					}
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(100);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -1341,7 +1348,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	
 	//FIXME 将处理好的临时文件夹下的图片生成视频
 	private String readyToCreateVideo(String tempFolder,String memoryId){
-		String videoAddress = convertImageToVideo(tempFolder, String.valueOf(System.currentTimeMillis()));
+		String videoAddress = convertImageToVideo(tempFolder, memoryId);
 		if(!"false".equals(videoAddress)){
 			dbVisitor.updateMemoryVideo(memoryId,videoAddress);
 		}

@@ -472,6 +472,7 @@ public class DBAccessImplement  implements DBAccessInterface{
 		memory.setTemplate(map.get("m_template").toString());
 		memory.setDialogues(map.get("m_dialogues").toString());
 		memory.setFrames(map.get("m_frames").toString());
+		memory.setVideo(map.get("m_video").toString());
 		memory.setCreateTime(map.get("m_createTime").toString());
 		memory.setEnable(Integer.parseInt(map.get("m_enable").toString()));
 		return memory;
@@ -501,6 +502,7 @@ public class DBAccessImplement  implements DBAccessInterface{
 				memory.setDialogues(map.get("m_dialogues").toString());
 				memory.setFrames(map.get("m_frames").toString());
 				memory.setCreateTime(map.get("m_createTime").toString());
+				memory.setVideo(map.get("m_video").toString());
 				memory.setEnable(Integer.parseInt(map.get("m_enable").toString()));
 				resList.add(memory);
 			}
@@ -700,6 +702,15 @@ public class DBAccessImplement  implements DBAccessInterface{
 		Map<String,Object> map = jdbcTemplate.queryForMap(sql);
 		content = map.get("d_content").toString();
 		return content;
+	}
+
+	@Override
+	public String getVideoPath(String resId) {
+		String imgPath = "";
+		String sql = "select m_video from t_memory where m_id='"+resId+"'";
+		Map<String,Object> map = jdbcTemplate.queryForMap(sql);
+		imgPath = map.get("m_video").toString();
+		return imgPath;
 	}
 	
 
