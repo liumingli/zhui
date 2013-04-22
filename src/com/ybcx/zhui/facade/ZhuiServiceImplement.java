@@ -1,11 +1,9 @@
 package com.ybcx.zhui.facade;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
@@ -57,11 +55,13 @@ import com.ybcx.zhui.beans.Shot;
 import com.ybcx.zhui.beans.Template;
 import com.ybcx.zhui.beans.User;
 import com.ybcx.zhui.dao.DBAccessInterface;
+import com.ybcx.zhui.beans.CountObj;
 import com.ybcx.zhui.tools.DeleteFile;
 import com.ybcx.zhui.tools.FfmpegProcess;
 import com.ybcx.zhui.tools.ImgDataProcessor;
 import com.ybcx.zhui.utils.ZhuiUtils;
 
+@SuppressWarnings("restriction")
 public class ZhuiServiceImplement implements ZhuiServiceInterface {
 
 	private static Logger log = Logger.getLogger(ZhuiServiceImplement.class);
@@ -951,8 +951,8 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		
 		if(new File(videoPath).exists()){
 			//删除图片文件夹
-//			DeleteFile delFile = new DeleteFile();
-//			delFile.delFolder(imgFolder);
+			DeleteFile delFile = new DeleteFile();
+			delFile.delFolder(imgFolder);
 			
 			return ZhuiUtils.processFilepath(videoPath);
 		}else{
@@ -1242,8 +1242,11 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		return response;
 	}
 
+	
 	@Override
 	public String createVideo(String memoryId) {
+		long sisy = System.currentTimeMillis();
+		String videoAddress = "false";
 		//1、根据memoryId取出memory
 		Memory memory = dbVisitor.getMemoryById(memoryId);
 		String templateId = memory.getTemplate();
@@ -1254,216 +1257,95 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		
 		//原始图片路径
 		String rawFolder =  imagePath + File.separator +"template"+File.separator+"video"+File.separator +templateId;
-		//临时存放贴上对白的图片文件夹
-		String tempFolder =  imagePath + File.separator +"template"+File.separator+"video"+File.separator+System.currentTimeMillis();
-		File fp = new File(tempFolder);
-		if(!fp.exists()){
-			fp.mkdir();
-		}
-		
-		int rawFolderSize = new File(rawFolder).listFiles().length;
-		if(rawFolderSize > 0){	
-			//确定需要贴对白的图片
-			for(int i=0;i<dialogueArr.length;i++){
-				String dialogueId = dialogueArr[i];
-				int frame = Integer.parseInt(frameArr[i]);
+	
+		if(new File(rawFolder).exists()){
+			int rawFolderSize = new File(rawFolder).listFiles().length;
+			if(rawFolderSize > 0){
 				
-				//根据templateId和frame确定shot，并找到图片贴上对白图片
-				Shot shot = dbVisitor.getShotByTemplateAndFrame(templateId,frame);
+				//临时存放贴上对白的图片文件夹
+				String tempFolder =  imagePath + File.separator +"template"+File.separator+"video"+File.separator+System.currentTimeMillis();
+				File fp = new File(tempFolder);
+				if(!fp.exists()){
+					fp.mkdir();
+				}
 				
-				String bubblePosition = shot.getBubblePosition();
-				String positionArr[] = bubblePosition.split(",");
-				int x=Integer.parseInt(positionArr[0]);
-				int y=Integer.parseInt(positionArr[1]);
-		
-				String videoImage = shot.getVideoImage();
-				String imageArr[] = videoImage.split(",");
-				int start=Integer.parseInt(imageArr[0]);
-				int end=Integer.parseInt(imageArr[1]);
-			
+				//FIXME 将相应图片放线程池处理
+				CountObj countObj = new CountObj();
+				countObj.count = rawFolderSize;
+				
 				for(int m=0;m<rawFolderSize;m++){
 					File oldFile = new File(rawFolder+File.separator+String.valueOf(m)+".png");
 					File newFile = new File(tempFolder+File.separator+String.valueOf(m)+".png");
+					File markFile = new File(imagePath + File.separator +"template"+File.separator+"dialogue"+File.separator+"mark.png");
 					
-					if(m>=start && m<=end){
-						//对白图片
-						String relativePath = dbVisitor.getDialogueFilePath(dialogueId);
-						String dialoguePath =  imagePath + File.separator +relativePath;
-						File dialogueFile = new File(dialoguePath);
+					File dialogueFile = null;
+					int x = 0;
+					int y = 0;
+					//确定需要贴对白的图片
+					for(int i=0;i<dialogueArr.length;i++){
+						String dialogueId = dialogueArr[i];
+						int frame = Integer.parseInt(frameArr[i]);
+						
+						//根据templateId和frame确定shot，并找到图片贴上对白图片
+						Shot shot = dbVisitor.getShotByTemplateAndFrame(templateId,frame);
+						
+						String bubblePosition = shot.getBubblePosition();
+						String positionArr[] = bubblePosition.split(",");
+						x=Integer.parseInt(positionArr[0]);
+						y=Integer.parseInt(positionArr[1]);
+				
+						String videoImage = shot.getVideoImage();
+						String imageArr[] = videoImage.split(",");
+						int start=Integer.parseInt(imageArr[0]);
+						int end=Integer.parseInt(imageArr[1]);
+						
+						if(m>=start && m<=end){
+							//对白图片
+							String relativePath = dbVisitor.getDialogueFilePath(dialogueId);
+							String dialoguePath =  imagePath + File.separator +relativePath;
+							dialogueFile = new File(dialoguePath);
+						}
+					}
+					
+					if(dialogueFile != null){
 						//贴对白
-						imgProcessor.createImageFile(oldFile, newFile, dialogueFile,x,y);
+						imgProcessor.createImageFile(oldFile, newFile, markFile,dialogueFile,x,y,countObj);
 					}else{
 						//普通mark输出
-						imgProcessor.createImageFile(oldFile, newFile, null, 0, 0);
+						imgProcessor.createImageFile(oldFile, newFile,markFile, null, 0, 0,countObj);
 					}
 				}
-			}
-		
-//			//FIXME 将处理好的临时文件夹下的图片生成视频
-//			long vs =System.currentTimeMillis();
-//			String videoAddress = convertImageToVideo(tempFolder, String.valueOf(System.currentTimeMillis()));
-//			System.out.println("create video "+(System.currentTimeMillis() - vs));
-//			if(!"false".equals(videoAddress)){
-//				dbVisitor.updateMemoryVideo(memoryId,videoAddress);
-//			}
-//			return videoAddress;
-			return "";
-		}else{
-			log.info("video image not exist");
-			return "false";
-		}
-	}
-
-	//给所有的图片添加水印文字
-	@SuppressWarnings("unused")
-	private void markAllVideoImage(String tempFolder, int x, int y) {
-		File markFile = new File(imagePath + File.separator + "template" + File.separator + "dialogue" + File.separator +"mark.png");
-		int imgCount = new File(tempFolder).listFiles().length;
-		for(int i=0;i<imgCount;i++){
-			//购造出要贴对白的目标图片的名字
-			String imagePath= tempFolder + File.separator + String.valueOf(i)+".png";
-			File imageFile = new File(imagePath);
-			//给所有的图片加mark
-			try {
-				//pressImage(imageFile,markFile,x,y,1f,0);
-				pressText(imageFile,"@智慧动画",x,y,1f,0);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	 private void pressText(File scrFile, String waterText, int x, int y,
-	            float alpha, double degree) throws Exception {  
-	        // 加载目标图片  
-	        Image srcImg = ImageIO.read(scrFile);  
-	        int src_width = srcImg.getWidth(null);  
-	        int src_height = srcImg.getHeight(null);  
-	        
-	        // 将目标图片加载到内存  
-	        BufferedImage bufImg = new BufferedImage(src_width, src_height,  
-	                BufferedImage.TYPE_INT_RGB);  
-	        Graphics2D g = bufImg.createGraphics();  
-	        g.drawImage(srcImg, 0, 0, src_width, src_height, null);  
-	        
-	        Font font = new Font("宋体", Font.PLAIN, 12);
-	        g.setFont(font);  
-	        g.setColor(Color.WHITE);  
-	    	/** 防止生成的文字带有锯齿 * */
-			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-	        // 将水印图片“画”在目标图片的指定位置  
-	        g.drawString(waterText, x, y);  
-	        // 保存目标图片  
-	        ImageIO.write(bufImg, "png", scrFile);  
-	    }  
-
-	//将对白图片贴到视频文件的正确位置上
-	private void combineDialogueWithImage(String tempFolder, String dialogueId,
-		 int x, int y, int start, int end) {
-		String relativePath = dbVisitor.getDialogueFilePath(dialogueId);
-		String dialoguePath =  imagePath + File.separator +relativePath;
-		File dialogueFile = new File(dialoguePath);
-		for(int i=start;i<=end;i++){
-			//购造出要贴对白的目标图片的名字
-			String imagePath= tempFolder + File.separator + String.valueOf(i)+".png";
-			File imageFile = new File(imagePath);
-			try {
-				pressImage(imageFile,dialogueFile,x,y,1f,0);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	//将对白图片贴到图片的指定位置
-	private void pressImage(File srcFile, File waterMarkFile, int x, int y,
-			float alpha, double degree) throws Exception {
-		// 加载目标图片
-		Image srcImg = ImageIO.read(srcFile);
-		int src_width = srcImg.getWidth(null);
-		int src_height = srcImg.getHeight(null);
-		// 将图片加载到内存
-		BufferedImage bufImg = new BufferedImage(src_width, src_height,
-				BufferedImage.TYPE_INT_RGB);
-		Graphics2D g = bufImg.createGraphics();
-		g.drawImage(srcImg, 0, 0, src_width, src_height, null);
-		// 加载水印图片
-		Image waterMarkImage = ImageIO.read(waterMarkFile);
-		int w_width = waterMarkImage.getWidth(null);
-		int w_height = waterMarkImage.getHeight(null);
-		// 设置透明度
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
-				alpha));
-		g.rotate(-Math.PI / 180 * degree, (double) bufImg.getWidth() / 2,
-				(double) bufImg.getHeight() / 2);
-
-		// 将水印图片“画”在目标图片的指定位置
-		g.drawImage(waterMarkImage, x, y, w_width, w_height, null);
-		g.dispose();
-		ImageIO.write(bufImg, "png", srcFile);
-
-	} 
-	  
-
-	private String createTempImageDir(String templateId) {
-		String fileFolder = imagePath + File.separator +"template"+File.separator+"video";
-		String tempFolder = fileFolder+File.separator+System.currentTimeMillis();
-		File fp = new File(tempFolder);
-		if(!fp.exists()){
-			fp.mkdir();
-			return tempFolder;
-		}else{
-			return "false";
-		}
-//		if(copyImage(imageFolder,tempFolder)){
-//			return tempFolder;
-//		}else{
-//			return "false";
-//		}
-	}
-	
-	private boolean copyImage(String oldPath, String newPath) {
-		boolean flag = false;
-		File oldFile = new File(oldPath);
-		File newFile = new File(newPath);
-		if (oldFile.exists()) {
-//			byte[] b = new byte[(int) oldFile.length()];
-			if (oldFile.isFile()) {
-				try {
-//					FileInputStream is = new FileInputStream(oldFile);
-//					FileOutputStream ps = new FileOutputStream(newFile);
-//					is.read(b);
-//					ps.write(b);
-					// 加载目标图片
-					Image srcImg = ImageIO.read(oldFile);
-					int src_width = srcImg.getWidth(null);
-					int src_height = srcImg.getHeight(null);
-					// 将图片加载到内存
-					BufferedImage bufImg = new BufferedImage(src_width, src_height,
-							BufferedImage.TYPE_INT_RGB);
-					Graphics2D g = bufImg.createGraphics();
-					g.drawImage(srcImg, 0, 0, src_width, src_height, null);
-					g.dispose();
-					
-					long ds =System.currentTimeMillis();
-					ImageIO.write(bufImg, "png", newFile);
-					System.out.println("write image "+(System.currentTimeMillis() - ds));
-					
-				} catch (Exception e) {
-					e.printStackTrace();
+				
+				//FIXME 生成视频，videoAddress赋值返回
+				while(true)
+				{
+					if(countObj.count == 0){
+						videoAddress = readyToCreateVideo(tempFolder,memoryId);
+						break;
+					}
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
-			} else if (oldFile.isDirectory()) {
-				if (!oldFile.exists())
-					oldFile.mkdir();
-				String[] list = oldFile.list();
-				for (int i = 0; i < list.length; i++) {
-					this.copyImage(oldPath + "/" + list[i], newPath + "/" + list[i]);
-				}
+			}else{
+				log.info("video image size is 0");
 			}
-			flag = true;
+		}else{
+			log.info("video image folder not exist");
 		}
-		return flag;
-	}  
+		log.info(System.currentTimeMillis() - sisy+">>>>>>create video>>>>>>");
+		return videoAddress;
+	}
+	
+	//FIXME 将处理好的临时文件夹下的图片生成视频
+	private String readyToCreateVideo(String tempFolder,String memoryId){
+		String videoAddress = convertImageToVideo(tempFolder, String.valueOf(System.currentTimeMillis()));
+		if(!"false".equals(videoAddress)){
+			dbVisitor.updateMemoryVideo(memoryId,videoAddress);
+		}
+		return videoAddress;
+	}
 	
 }

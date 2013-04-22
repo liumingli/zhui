@@ -8,15 +8,19 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.ybcx.zhui.beans.CountObj;
+
 public class ImageFileCreationTask implements Runnable {
 	
-
+		public CountObj countObj;
 		private File oldFile;
 		
 		private File newFile;
 		
-		private File waterMarkFile;
+		private File markFile;
 		
+		private File dialogueFile;
+	
 		private int x;
 		
 		private int y;
@@ -43,6 +47,7 @@ public class ImageFileCreationTask implements Runnable {
 //			g.dispose();
 //			
 //			ImageIO.write(bufImg, "png", newFile);
+			
 			// 加载目标图片
 			Image srcImg = ImageIO.read(oldFile);
 			int src_width = srcImg.getWidth(null);
@@ -52,15 +57,28 @@ public class ImageFileCreationTask implements Runnable {
 					BufferedImage.TYPE_INT_RGB);
 			Graphics2D g = bufImg.createGraphics();
 			g.drawImage(srcImg, 0, 0, src_width, src_height, null);
-			// 加载水印图片
-			Image waterMarkImage = ImageIO.read(waterMarkFile);
-			int w_width = waterMarkImage.getWidth(null);
-			int w_height = waterMarkImage.getHeight(null);
-
+			
+			// 加载@水印图片
+			Image markImage = ImageIO.read(markFile);
+			int m_width = markImage.getWidth(null);
+			int m_height = markImage.getHeight(null);
 			// 将水印图片“画”在目标图片的指定位置
-			g.drawImage(waterMarkImage, x, y, w_width, w_height, null);
+			g.drawImage(markImage, 420, 340, m_width, m_height, null);
+			
+		
+			if(dialogueFile != null){
+				// 加载水印图片
+				Image dialogueImage = ImageIO.read(dialogueFile);
+				int w_width = dialogueImage.getWidth(null);
+				int w_height = dialogueImage.getHeight(null);
+				// 将水印图片“画”在目标图片的指定位置
+				g.drawImage(dialogueImage, x, y, w_width, w_height, null);
+			}
+			
 			g.dispose();
+			
 			ImageIO.write(bufImg, "png", newFile);
+			countObj.count -= 1;
 		}
 
 		public void setOldFile(File oldFile) {
@@ -71,9 +89,14 @@ public class ImageFileCreationTask implements Runnable {
 		public void setNewFile(File newFile) {
 			this.newFile = newFile;
 		}
+		
+		public void setDialogueFile(File dialogueFile) {
+			this.dialogueFile = dialogueFile;
+		}
 
-		public void setWaterMarkFile(File waterMarkFile) {
-			this.waterMarkFile = waterMarkFile;
+
+		public void setMarkFile(File markFile) {
+			this.markFile = markFile;
 		}
 
 		public void setX(int x) {
