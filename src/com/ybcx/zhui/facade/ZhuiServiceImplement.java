@@ -424,7 +424,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 	    	} 
 	    	
 	    	if(dir.exists()){
-	    		log.info("make videoImage path sueecess "+videoImagePath);
+	    		log.info("Create videoImage path sueecess "+videoImagePath);
 	    	}
     	}
 	}
@@ -1262,6 +1262,9 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		String dialogueArr[] = dialogueIds.split(",");
 		String frameArr[] = frames.split(",");
 		
+		//FIXME 排序
+		reorder(frameArr,dialogueArr);
+		
 		//原始图片路径
 		String rawFolder =  imagePath + File.separator +"template"+File.separator+"video"+File.separator +templateId;
 	
@@ -1311,6 +1314,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 							String relativePath = dbVisitor.getDialogueFilePath(dialogueId);
 							String dialoguePath =  imagePath + File.separator +relativePath;
 							dialogueFile = new File(dialoguePath);
+							break;
 						}
 					}
 					
@@ -1321,6 +1325,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 						//普通mark输出
 						imgProcessor.createImageFile(oldFile, newFile,markFile, null, 0, 0,countObj);
 					}
+					
 				}
 				
 				//FIXME 生成视频，videoAddress赋值返回
@@ -1353,6 +1358,31 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 			dbVisitor.updateMemoryVideo(memoryId,videoAddress);
 		}
 		return videoAddress;
+	}
+	
+	private static void reorder(String[] frameArr,String[] dialogueArr){
+		boolean flag = true;
+		int size = frameArr.length;
+		String temp = "";
+		String dia = "";
+		for(int i=0;i<size -1;i++){
+			for(int j=0;j<size-i-1;j++){
+				if(Integer.parseInt(frameArr[j]) > Integer.parseInt(frameArr[j+1])){
+					temp = frameArr[j];
+					frameArr[j] = frameArr[j+1];
+					frameArr[j+1] = temp;
+			
+					dia = dialogueArr[j];
+					dialogueArr[j] = dialogueArr[j+1];
+					dialogueArr[j+1] = dia;
+					
+					flag = false;
+				}
+			}
+			if(flag){
+				break;
+			}
+		}
 	}
 	
 }
