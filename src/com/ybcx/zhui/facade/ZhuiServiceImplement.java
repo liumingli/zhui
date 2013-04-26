@@ -301,7 +301,18 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		if (!fp.exists()){
 			fp.mkdir();
 		} 
-		String filePath = createDialogueImage(previewPath,dialogue,Integer.parseInt(width),Integer.parseInt(height));
+		
+		//判断是否正常传值气泡宽高
+		int w =120;
+		int h = 60;
+		if(width.matches("[0-9]+")){
+			w=Integer.parseInt(width);
+		}
+		if(height.matches("[0-9]+")){
+			h=Integer.parseInt(height);
+		}
+		
+		String filePath = createDialogueImage(previewPath,dialogue,w,h);
 		//log.info("The new image path is "+filePath);
 		File file = new File(filePath);
 		if (file.exists()) {
@@ -1259,6 +1270,7 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 		String templateId = memory.getTemplate();
 		String dialogueIds = memory.getDialogues();
 		String frames = memory.getFrames();
+		
 		String dialogueArr[] = dialogueIds.split(",");
 		String frameArr[] = frames.split(",");
 		
@@ -1291,6 +1303,8 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 					File dialogueFile = null;
 					int x = 0;
 					int y = 0;
+					int start = 0;
+					int end = 0;
 					//确定需要贴对白的图片
 					for(int i=0;i<dialogueArr.length;i++){
 						String dialogueId = dialogueArr[i];
@@ -1300,16 +1314,30 @@ public class ZhuiServiceImplement implements ZhuiServiceInterface {
 						Shot shot = dbVisitor.getShotByTemplateAndFrame(templateId,frame);
 						
 						String bubblePosition = shot.getBubblePosition();
-						String positionArr[] = bubblePosition.split(",");
-						x=Integer.parseInt(positionArr[0]);
-						y=Integer.parseInt(positionArr[1]);
+						if(bubblePosition.contains(",")){
+							String positionArr[] = bubblePosition.split(",");
+							if(positionArr[0].matches("[0-9]+")){
+								x=Integer.parseInt(positionArr[0]);
+							}
+							if(positionArr[1].matches("[0-9]+")){
+								y=Integer.parseInt(positionArr[1]);
+							}
+						}
 				
 						String videoImage = shot.getVideoImage();
-						String imageArr[] = videoImage.split(",");
-						int start=Integer.parseInt(imageArr[0]);
-						int end=Integer.parseInt(imageArr[1]);
+						if(videoImage.contains(",")){
+							String imageArr[] = videoImage.split(",");
+							if(imageArr[0].matches("[0-9]+")){
+								start=Integer.parseInt(imageArr[0]);
+							}
+							if(imageArr[1].matches("[0-9]+")){
+								end=Integer.parseInt(imageArr[1]);
+							}
+						}
 						
-						if(m>=start && m<=end){
+						int tempNum = end - start ;
+							
+						if(m>=start && m<=end && x!=0 && y!=0 && tempNum !=0 ){
 							//对白图片
 							String relativePath = dbVisitor.getDialogueFilePath(dialogueId);
 							String dialoguePath =  imagePath + File.separator +relativePath;
